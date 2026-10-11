@@ -33,6 +33,33 @@ A single command runs three programs in order.
    availability), the requirements, the agent's assumptions, and the Formal
    Specification.
 
+## Example output
+
+These screenshots show `summary.html` for the sensor node example in
+`examples/sensor_node/`.
+
+**Recommended Parts**, sorted by price (the default) and by availability.
+Each part expands to show its pin assignment.
+
+![Recommended Parts tab sorted by price, lowest first, listing three parts with their price, stock, package and spare GPIO](screenshots/recommended_parts_by_price.png)
+
+![Recommended Parts tab sorted by availability, most first](screenshots/recommended_parts_by_availability.png)
+
+**Requirements**, as written by the user.
+
+![Requirements tab showing the contents of Requirements.md](screenshots/requirements.png)
+
+**Agent Assumptions**: what the agent assumed, the ambiguities it resolved,
+the requirements it could not capture, and how it counted GPIO.
+
+![Agent Assumptions tab, first part](screenshots/assumptions_part1.png)
+
+![Agent Assumptions tab, second part](screenshots/assumptions_part2.png)
+
+**Formal Specification**, as passed to the Part Evaluator.
+
+![Formal Specification tab showing the YAML specification](screenshots/formal_specification.png)
+
 ## Usage
 
 Requirements: Python 3.10 or later, and [Claude Code](https://claude.com/claude-code)
@@ -157,8 +184,6 @@ the disclaimer and the sources and assumptions behind each part.
 - **The agent can misread requirements.** The Formal Specification is checked
   for format, not for whether it reflects what you meant. Read it and
   `agent_assumptions.md` before trusting a result.
-- **The summary page has not been tested in a browser.** The tabs and sort
-  buttons are untested.
 
 ## Project layout
 
@@ -170,6 +195,7 @@ the disclaimer and the sources and assumptions behind each part.
 | `parts/` | The Parts Database |
 | `examples/` | Example requirements files |
 | `tests/` | Tests for the Part Evaluator |
+| `screenshots/` | Screenshots of the summary page used in this README |
 
 Run the tests with:
 
