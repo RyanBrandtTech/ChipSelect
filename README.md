@@ -19,17 +19,21 @@ candidates typically takes an engineer anywhere from a few days to a couple
 of weeks. Because of that cost, teams tend to evaluate only two or three
 parts, often the ones they already know.
 
-ChipSelect does the pin-level check for every part in its database in about a
-second. A part is recommended only if every required signal and GPIO can be
-placed on its own pin, and the assignment it found is included in the result.
+ChipSelect does this in well under a minute. A full run on one of the example
+requirements files takes about 25 seconds, nearly all of it the Specification
+Agent reading the requirements; the pin-level check of all 24 parts in the
+database then takes about a second. A part is recommended only if every
+required signal and GPIO can be placed on its own pin, and the assignment it
+found is included in the result.
 
 The same check helps with supply risk. When a chosen part goes out of stock
 or its lead time grows, as happened widely during the 2021-2022 chip
 shortage, a design that was evaluated against only one or two parts has no
 ready alternative, and finding one means repeating the evaluation under
 schedule pressure. Because ChipSelect lists every part that fits, with price
-and stock, the alternatives are known from the start, and the search can be
-re-run in seconds whenever the requirements or the stock figures change.
+and stock, the alternatives are known from the start. When the stock figures
+change, the existing specification can be re-checked in about a second; when
+the requirements change, a full run takes about 25 seconds.
 
 ## How it works
 
@@ -91,6 +95,13 @@ installed and logged in (the Specification Agent runs through `claude -p`).
 Each run calls a Claude model through your Claude Code login and counts
 against that account's usage, with up to three calls if the agent's output
 has to be corrected. Runs with `--skip-agent` make no model calls.
+
+Measured on the three examples with the 24-part database, a full run took 22
+to 25 seconds, of which the Specification Agent's single model call was 21 to
+24 seconds. With `--skip-agent` a run took about 1.3 seconds, most of that
+spent loading and validating the Parts Database; evaluating the parts took
+under 0.05 seconds. The agent's time depends on the model and on network
+conditions, so expect it to vary.
 
 The outputs are written to an `output/` directory next to the requirements
 file:
