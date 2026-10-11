@@ -18,7 +18,7 @@ A single command runs three programs in order.
 ![ChipSelect architecture: the user's Requirements.md goes to the Specification Agent (with agent_context.md), which produces the Formal Specification and agent_assumptions.md; the Part Evaluator checks the Formal Specification against the Parts Database to produce recommended_parts.yaml; the Summary Viewer turns these into summary.html for the user.](screenshots/ChipSelect_architecture.png)
 
 1. **Specification Agent.** An AI agent reads `Requirements.md`, guided by
-   the instructions in `agent_context.md`, and writes a Formal Specification.
+   the instructions in `chipselect/agent_context.md`, and writes a Formal Specification.
    Requirements are often incomplete, so where it has to, the agent makes
    minimal assumptions and records every one of them in
    `agent_assumptions.md`. The agent is given no tools and cannot modify
@@ -113,7 +113,7 @@ under "Requirements not captured" for you to check by hand.
 ## Formal Specification
 
 A YAML file of hard requirements, defined by `schemas/spec.schema.yaml` and
-described for the agent in `agent_context.md`. It contains:
+described for the agent in `chipselect/agent_context.md`. It contains:
 
 - **Limits** (all optional): maximum unit cost, minimum stock, maximum area,
   length, width and height, minimum flash, RAM and clock speed, acceptable
@@ -189,8 +189,7 @@ the disclaimer and the sources and assumptions behind each part.
 
 | Path | Contents |
 |------|----------|
-| `chipselect/` | The three programs and the command-line entry point |
-| `agent_context.md` | Instructions given to the Specification Agent |
+| `chipselect/` | The three programs, the command-line entry point, and `agent_context.md`, the instructions given to the Specification Agent |
 | `schemas/` | Schemas for the Parts Database and the Formal Specification |
 | `parts/` | The Parts Database |
 | `examples/` | Example requirements files |

@@ -17,7 +17,7 @@ from pathlib import Path
 
 from chipselect.spec import SpecError, load_spec
 
-CONTEXT_PATH = Path(__file__).resolve().parent.parent / "agent_context.md"
+CONTEXT_PATH = Path(__file__).resolve().parent / "agent_context.md"
 SPEC_NAME = "formal_specification.yaml"
 ASSUMPTIONS_NAME = "agent_assumptions.md"
 MAX_ATTEMPTS = 3
@@ -108,7 +108,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Create a Formal Specification from a Requirements.md.")
     parser.add_argument("requirements", help="requirements Markdown file")
     parser.add_argument("--out", default=".", help="directory for the two output files (default: current directory)")
-    parser.add_argument("--context", default=CONTEXT_PATH, help="agent context file (default: agent_context.md)")
+    parser.add_argument("--context", default=CONTEXT_PATH, help="agent context file (default: chipselect/agent_context.md)")
     parser.add_argument("--model", help="Claude model to use (default: Claude Code's configured model)")
     args = parser.parse_args(argv)
 
