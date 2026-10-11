@@ -109,6 +109,7 @@ Options:
 | `--out DIR` | Write the outputs to `DIR` |
 | `--parts DIR` | Use a different Parts Database directory |
 | `--model NAME` | Claude model for the Specification Agent |
+| `--clean` | Remove the four output files for this requirements file and exit, without running anything |
 | `--skip-agent` | Reuse the Formal Specification and assumptions already in the output directory, and re-run only the Part Evaluator and Summary Viewer |
 
 Each stage can also be run on its own:

@@ -7,6 +7,8 @@ that order and writes, into the output directory:
 
     formal_specification.yaml   agent_assumptions.md
     recommended_parts.yaml      summary.html
+
+With --clean it removes those four files instead of running.
 """
 
 import argparse
@@ -23,6 +25,25 @@ from chipselect.spec import SpecError, load_spec
 DEFAULT_PARTS = Path(__file__).resolve().parent.parent / "parts"
 
 
+def clean(out, paths):
+    """Remove a run's output files, and the output directory if that empties it."""
+    try:
+        removed = [path for path in paths if path.is_file()]
+        for path in removed:
+            path.unlink()
+        # Only ChipSelect's own files are deleted, so --out may safely name a shared directory.
+        if out.is_dir() and not any(out.iterdir()):
+            out.rmdir()
+    except OSError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+    for path in removed:
+        print(f"removed {path}")
+    if not removed:
+        print(f"nothing to remove in {out}")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="chipselect",
@@ -36,6 +57,10 @@ def main(argv=None):
         "--skip-agent", action="store_true",
         help="reuse the formal_specification.yaml and agent_assumptions.md already in the output directory",
     )
+    parser.add_argument(
+        "--clean", action="store_true",
+        help="remove the output files of this requirements file and exit, without running anything",
+    )
     args = parser.parse_args(argv)
 
     requirements = Path(args.requirements)
@@ -44,6 +69,9 @@ def main(argv=None):
     assumptions_path = out / spec_agent.ASSUMPTIONS_NAME
     recommended_path = out / "recommended_parts.yaml"
     summary_path = out / "summary.html"
+
+    if args.clean:
+        return clean(out, [spec_path, assumptions_path, recommended_path, summary_path])
 
     try:
         parts = load_parts(args.parts)
