@@ -1,0 +1,96 @@
+schema_version: 1
+part_number: PIC16F877A-I/PT
+manufacturer: Microchip
+description: 8-bit PIC16 MCU, 20 MHz, 8K words (14 KB) flash, 368 B RAM, 5 V, TQFP-44
+datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/39582b.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 5.63
+quantity_available: 644
+
+core: PIC16
+max_clock_mhz: 20
+# 8192 words of 14 bits.
+flash_kb: 14
+ram_kb: 0.36
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TQFP-44
+  pin_count: 44
+  length_mm: 12.0
+  width_mm: 12.0
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: VDD, min_v: 4.0, max_v: 5.5, required: true, description: PIC16F877A (not LF) operating range}
+  io_voltages: [5.0]
+
+counts:
+  analog_inputs: 8
+  analog_outputs: 0
+  gpio: 33
+  spi: 1
+  i2c: 1
+  pwm_pins: 2
+  uart: 1
+  can: 0
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+# OSC1, OSC2 and MCLR are not GPIO on this part and are omitted.
+pins:
+  gpio:
+    [RA0, RA1, RA2, RA3, RA4, RA5,
+     RB0, RB1, RB2, RB3, RB4, RB5, RB6, RB7,
+     RC0, RC1, RC2, RC3, RC4, RC5, RC6, RC7,
+     RD0, RD1, RD2, RD3, RD4, RD5, RD6, RD7,
+     RE0, RE1, RE2]
+  special:
+    RB3: PGM low-voltage ICSP enable (reserved when LVP is enabled)
+    RB6: PGC ICSP/debug clock
+    RB7: PGD ICSP/debug data
+
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      AN0: [RA0]
+      AN1: [RA1]
+      AN2: [RA2]
+      AN3: [RA3]
+      AN4: [RA5]
+      AN5: [RE0]
+      AN6: [RE1]
+      AN7: [RE2]
+
+  # One MSSP module: either SPI or I2C.
+  MSSP_SPI:
+    type: spi
+    shares: MSSP
+    signals:
+      SCK: [RC3]
+      MISO: [RC4]
+      MOSI: [RC5]
+      NSS: [RA5]
+  MSSP_I2C:
+    type: i2c
+    shares: MSSP
+    signals:
+      SCL: [RC3]
+      SDA: [RC4]
+
+  USART:
+    type: uart
+    signals:
+      TX: [RC6]
+      RX: [RC7]
+
+  # CCP1 and CCP2 in PWM mode; both use Timer2 as time base (common period).
+  CCP:
+    type: pwm
+    signals:
+      CCP1: [RC2]
+      CCP2: [RC1]

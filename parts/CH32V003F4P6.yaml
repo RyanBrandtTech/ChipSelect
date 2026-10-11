@@ -1,0 +1,103 @@
+schema_version: 1
+part_number: CH32V003F4P6
+manufacturer: WCH
+description: 32-bit RISC-V (QingKe V2A, RV32EC) MCU, 48 MHz, 16 KB flash, 2 KB RAM, 3.3 V or 5 V, TSSOP-20
+datasheet: https://www.wch-ic.com/downloads/CH32V003DS0_PDF.html
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 0.32
+quantity_available: 4600
+
+core: QingKe V2A (RV32EC)
+max_clock_mhz: 48
+flash_kb: 16
+ram_kb: 2
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TSSOP-20
+  pin_count: 20
+  length_mm: 6.5
+  width_mm: 6.4
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: VDD, min_v: 2.7, max_v: 5.5, required: true, description: 2.8 V minimum recommended when the ADC is used}
+  io_voltages: [3.3, 5.0]
+  five_volt_tolerant_pins: [PC1, PC2, PC5, PC6]
+
+counts:
+  analog_inputs: 8
+  analog_outputs: 0
+  gpio: 18
+  spi: 1
+  i2c: 1
+  pwm_pins: 15
+  uart: 1
+  can: 0
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PA1, PA2,
+     PC0, PC1, PC2, PC3, PC4, PC5, PC6, PC7,
+     PD0, PD1, PD2, PD3, PD4, PD5, PD6, PD7]
+  special:
+    PD1: SWIO single-wire debug/programming
+    PD7: NRST reset
+    PA1: external crystal (OSCI)
+    PA2: external crystal (OSCO)
+
+# AFIO remaps move all pins of a peripheral together, hence pin_options.
+# Options are listed in remap-value order (0 = default first).
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [PA2]
+      IN1: [PA1]
+      IN2: [PC4]
+      IN3: [PD2]
+      IN4: [PD3]
+      IN5: [PD5]
+      IN6: [PD6]
+      IN7: [PD4]
+
+  SPI1:
+    type: spi
+    pin_options:
+      - {NSS: [PC1], SCK: [PC5], MOSI: [PC6], MISO: [PC7]}
+      - {NSS: [PC0], SCK: [PC5], MOSI: [PC6], MISO: [PC7]}
+
+  I2C1:
+    type: i2c
+    pin_options:
+      - {SCL: [PC2], SDA: [PC1]}
+      - {SCL: [PD1], SDA: [PD0]}
+      - {SCL: [PC5], SDA: [PC6]}
+
+  USART1:
+    type: uart
+    pin_options:
+      - {CK: [PD4], TX: [PD5], RX: [PD6], CTS: [PD3], RTS: [PC2]}
+      - {CK: [PD7], TX: [PD0], RX: [PD1], CTS: [PC3], RTS: [PC2]}
+      - {CK: [PD7], TX: [PD6], RX: [PD5], CTS: [PC6], RTS: [PC7]}
+      - {CK: [PC5], TX: [PC0], RX: [PC1], CTS: [PC6], RTS: [PC7]}
+
+  # Remap value 2 has the same CH1-CH4 pins as the default and is not repeated.
+  TIM1:
+    type: pwm
+    pin_options:
+      - {CH1: [PD2], CH2: [PA1], CH3: [PC3], CH4: [PC4]}
+      - {CH1: [PC6], CH2: [PC7], CH3: [PC0], CH4: [PD3]}
+      - {CH1: [PC4], CH2: [PC7], CH3: [PC5], CH4: [PD4]}
+  TIM2:
+    type: pwm
+    pin_options:
+      - {CH1: [PD4], CH2: [PD3], CH3: [PC0], CH4: [PD7]}
+      - {CH1: [PC5], CH2: [PC2], CH3: [PD2], CH4: [PC1]}
+      - {CH1: [PC1], CH2: [PD3], CH3: [PC0], CH4: [PD7]}
+      - {CH1: [PC1], CH2: [PC7], CH3: [PD6], CH4: [PD5]}

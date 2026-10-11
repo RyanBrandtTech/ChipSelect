@@ -45,6 +45,8 @@ TODO:
 * ~~Write Summary Viewer script for generating the summary html file.~~ (done: `python -m chipselect.viewer`)
 * ~~Write some example Requirements.md files and put them in an examples folder.~~ (done: `examples/`)
 
+The Parts Database is in `parts/`; see `parts/README.md` for its sources and a disclaimer about the accuracy of the data.
+
 The information in the Parts Database is expected to include the following:
 * Unit Cost
 * Quantity Available (Availability)

@@ -1,0 +1,149 @@
+schema_version: 1
+part_number: MSP430FR5969IRGZR
+manufacturer: Texas Instruments
+description: 16-bit MSP430 FRAM MCU, 16 MHz, 64 KB FRAM, 2 KB RAM, VQFN-48
+datasheet: https://www.ti.com/lit/gpn/msp430fr5969
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 5.25
+quantity_available: 13102
+
+core: MSP430
+max_clock_mhz: 16
+# 64 KB of FRAM (non-volatile program/data memory), recorded as flash.
+flash_kb: 64
+ram_kb: 2
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: VQFN-48
+  pin_count: 48
+  length_mm: 7.0
+  width_mm: 7.0
+  height_mm: 1.0
+
+power:
+  supplies:
+    - {name: DVCC, min_v: 1.8, max_v: 3.6, required: true, description: Minimum is set by the SVS power-up level}
+    - {name: AVCC, min_v: 1.8, max_v: 3.6, required: true, description: Analog supply; power from the same source as DVCC}
+  io_voltages: [1.8, 2.5, 3.3]
+
+counts:
+  analog_inputs: 16
+  analog_outputs: 0
+  gpio: 40
+  spi: 3
+  i2c: 1
+  pwm_pins: 16
+  uart: 2
+  can: 0
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+# Datasheet pin names are P1.0, PJ.0 etc.; "." is written "_" here.
+pins:
+  gpio:
+    [P1_0, P1_1, P1_2, P1_3, P1_4, P1_5, P1_6, P1_7,
+     P2_0, P2_1, P2_2, P2_3, P2_4, P2_5, P2_6, P2_7,
+     P3_0, P3_1, P3_2, P3_3, P3_4, P3_5, P3_6, P3_7,
+     P4_0, P4_1, P4_2, P4_3, P4_4, P4_5, P4_6, P4_7,
+     PJ_0, PJ_1, PJ_2, PJ_3, PJ_4, PJ_5, PJ_6, PJ_7]
+  special:
+    PJ_0: JTAG TDO
+    PJ_1: JTAG TDI/TCLK
+    PJ_2: JTAG TMS
+    PJ_3: JTAG TCK
+    PJ_4: 32.768 kHz crystal (LFXIN)
+    PJ_5: 32.768 kHz crystal (LFXOUT)
+    PJ_6: high-frequency crystal (HFXIN)
+    PJ_7: high-frequency crystal (HFXOUT)
+
+# Pin functions are fixed per pin (PxSEL0/PxSEL1); there is no port mapping.
+# eUSCI_A0/A1 are UART or SPI and eUSCI_B0 is SPI or I2C, hence `shares`.
+peripherals:
+  ADC12_B:
+    type: adc
+    signals:
+      A0: [P1_0]
+      A1: [P1_1]
+      A2: [P1_2]
+      A3: [P1_3]
+      A4: [P1_4]
+      A5: [P1_5]
+      A6: [P2_3]
+      A7: [P2_4]
+      A8: [P4_0]
+      A9: [P4_1]
+      A10: [P4_2]
+      A11: [P4_3]
+      A12: [P3_0]
+      A13: [P3_1]
+      A14: [P3_2]
+      A15: [P3_3]
+
+  eUSCI_A0_UART:
+    type: uart
+    shares: eUSCI_A0
+    signals:
+      TX: [P2_0]
+      RX: [P2_1]
+  eUSCI_A0_SPI:
+    type: spi
+    shares: eUSCI_A0
+    signals:
+      MOSI: [P2_0]
+      MISO: [P2_1]
+      SCK: [P1_5]
+      NSS: [P1_4]
+
+  eUSCI_A1_UART:
+    type: uart
+    shares: eUSCI_A1
+    signals:
+      TX: [P2_5]
+      RX: [P2_6]
+  eUSCI_A1_SPI:
+    type: spi
+    shares: eUSCI_A1
+    signals:
+      MOSI: [P2_5]
+      MISO: [P2_6]
+      SCK: [P2_4]
+      NSS: [P2_3]
+
+  eUSCI_B0_SPI:
+    type: spi
+    shares: eUSCI_B0
+    signals:
+      MOSI: [P1_6]
+      MISO: [P1_7]
+      SCK: [P2_2]
+      NSS: [P1_3]
+  eUSCI_B0_I2C:
+    type: i2c
+    shares: eUSCI_B0
+    signals:
+      SDA: [P1_6]
+      SCL: [P1_7]
+
+  # CCR0 outputs (TA0.0, TA1.0, TB0.0) are not listed.
+  TA0:
+    type: pwm
+    signals:
+      TA0_1: [P1_0]
+      TA0_2: [P1_1]
+  TA1:
+    type: pwm
+    signals:
+      TA1_1: [P1_2]
+      TA1_2: [P1_3]
+  TB0:
+    type: pwm
+    signals:
+      TB0_1: [P1_4, P2_6]
+      TB0_2: [P1_5, P2_2]
+      TB0_3: [P3_4, P1_6]
+      TB0_4: [P3_5, P1_7]
+      TB0_5: [P3_6, P4_4]
+      TB0_6: [P3_7, P2_0]

@@ -1,0 +1,271 @@
+schema_version: 1
+part_number: ATSAMD21G18A-AU
+manufacturer: Microchip
+description: Arm Cortex-M0+ MCU, 48 MHz, 256 KB flash, 32 KB RAM, USB, TQFP-48
+datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/SAM-D21DA1-Family-Data-Sheet-DS40001882G.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 3.45
+quantity_available: 3209
+
+core: Cortex-M0+
+max_clock_mhz: 48
+flash_kb: 256
+ram_kb: 32
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TQFP-48
+  pin_count: 48
+  length_mm: 9.0
+  width_mm: 9.0
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: VDDIN, min_v: 1.62, max_v: 3.63, required: true, description: I/O and on-chip regulator supply; 3.0 V minimum for USB}
+    - {name: VDDIO, min_v: 1.62, max_v: 3.63, required: true, description: I/O supply; same voltage as VDDIN}
+    - {name: VDDANA, min_v: 1.62, max_v: 3.63, required: true, description: Analog supply; same voltage as VDDIN}
+    - {name: VDDCORE, min_v: 1.1, max_v: 1.3, required: false, description: Core supply from the on-chip regulator; needs only a decoupling capacitor}
+  io_voltages: [1.8, 2.5, 3.3]
+
+counts:
+  analog_inputs: 14
+  analog_outputs: 1
+  gpio: 38
+  spi: 6
+  i2c: 6
+  pwm_pins: 28
+  uart: 6
+  can: 0
+  usb: 1
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PA00, PA01, PA02, PA03, PA04, PA05, PA06, PA07, PA08, PA09, PA10, PA11, PA12, PA13,
+     PA14, PA15, PA16, PA17, PA18, PA19, PA20, PA21, PA22, PA23, PA24, PA25, PA27, PA28,
+     PA30, PA31, PB02, PB03, PB08, PB09, PB10, PB11, PB22, PB23]
+  special:
+    PA00: 32.768 kHz crystal (XIN32)
+    PA01: 32.768 kHz crystal (XOUT32)
+    PA14: main crystal (XIN)
+    PA15: main crystal (XOUT)
+    PA30: SWCLK debug
+    PA31: SWDIO debug
+
+# Each pin selects its peripheral function independently, so signals are
+# listed per pin. Every SERCOM is modelled as three roles sharing the unit.
+# SERCOM pad rules are simplified: each signal lists every pin whose pad that
+# signal can use (UART TX on PAD0/2, RTS PAD2, CTS PAD3, CK PAD1/3, RX any;
+# SPI MOSI on PAD0/2/3, SCK PAD1/3, NSS PAD1/2, MISO any), but the DOPO/DIPO
+# and TXPO/RXPO settings allow only some combinations of those pads.
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      AIN0: [PA02]
+      AIN1: [PA03]
+      AIN2: [PB08]
+      AIN3: [PB09]
+      AIN4: [PA04]
+      AIN5: [PA05]
+      AIN6: [PA06]
+      AIN7: [PA07]
+      AIN10: [PB02]
+      AIN11: [PB03]
+      AIN16: [PA08]
+      AIN17: [PA09]
+      AIN18: [PA10]
+      AIN19: [PA11]
+
+  DAC:
+    type: dac
+    signals:
+      VOUT: [PA02]
+
+  SERCOM0_UART:
+    type: uart
+    shares: SERCOM0
+    signals:
+      TX: [PA04, PA06, PA08, PA10]
+      RX: [PA04, PA05, PA06, PA07, PA08, PA09, PA10, PA11]
+      RTS: [PA06, PA10]
+      CTS: [PA07, PA11]
+      CK: [PA05, PA07, PA09, PA11]
+  SERCOM0_SPI:
+    type: spi
+    shares: SERCOM0
+    signals:
+      MOSI: [PA04, PA06, PA07, PA08, PA10, PA11]
+      MISO: [PA04, PA05, PA06, PA07, PA08, PA09, PA10, PA11]
+      SCK: [PA05, PA07, PA09, PA11]
+      NSS: [PA05, PA06, PA09, PA10]
+  SERCOM0_I2C:
+    type: i2c
+    shares: SERCOM0
+    signals:
+      SDA: [PA08]
+      SCL: [PA09]
+
+  SERCOM1_UART:
+    type: uart
+    shares: SERCOM1
+    signals:
+      TX: [PA00, PA16, PA18, PA30]
+      RX: [PA00, PA01, PA16, PA17, PA18, PA19, PA30, PA31]
+      RTS: [PA18, PA30]
+      CTS: [PA19, PA31]
+      CK: [PA01, PA17, PA19, PA31]
+  SERCOM1_SPI:
+    type: spi
+    shares: SERCOM1
+    signals:
+      MOSI: [PA00, PA16, PA18, PA19, PA30, PA31]
+      MISO: [PA00, PA01, PA16, PA17, PA18, PA19, PA30, PA31]
+      SCK: [PA01, PA17, PA19, PA31]
+      NSS: [PA01, PA17, PA18, PA30]
+  SERCOM1_I2C:
+    type: i2c
+    shares: SERCOM1
+    signals:
+      SDA: [PA16]
+      SCL: [PA17]
+
+  SERCOM2_UART:
+    type: uart
+    shares: SERCOM2
+    signals:
+      TX: [PA08, PA10, PA12, PA14]
+      RX: [PA08, PA09, PA10, PA11, PA12, PA13, PA14, PA15]
+      RTS: [PA10, PA14]
+      CTS: [PA11, PA15]
+      CK: [PA09, PA11, PA13, PA15]
+  SERCOM2_SPI:
+    type: spi
+    shares: SERCOM2
+    signals:
+      MOSI: [PA08, PA10, PA11, PA12, PA14, PA15]
+      MISO: [PA08, PA09, PA10, PA11, PA12, PA13, PA14, PA15]
+      SCK: [PA09, PA11, PA13, PA15]
+      NSS: [PA09, PA10, PA13, PA14]
+  SERCOM2_I2C:
+    type: i2c
+    shares: SERCOM2
+    signals:
+      SDA: [PA08, PA12]
+      SCL: [PA09, PA13]
+
+  SERCOM3_UART:
+    type: uart
+    shares: SERCOM3
+    signals:
+      TX: [PA16, PA18, PA20, PA22, PA24]
+      RX: [PA16, PA17, PA18, PA19, PA20, PA21, PA22, PA23, PA24, PA25]
+      RTS: [PA18, PA20, PA24]
+      CTS: [PA19, PA21, PA25]
+      CK: [PA17, PA19, PA21, PA23, PA25]
+  SERCOM3_SPI:
+    type: spi
+    shares: SERCOM3
+    signals:
+      MOSI: [PA16, PA18, PA19, PA20, PA21, PA22, PA24, PA25]
+      MISO: [PA16, PA17, PA18, PA19, PA20, PA21, PA22, PA23, PA24, PA25]
+      SCK: [PA17, PA19, PA21, PA23, PA25]
+      NSS: [PA17, PA18, PA20, PA23, PA24]
+  SERCOM3_I2C:
+    type: i2c
+    shares: SERCOM3
+    signals:
+      SDA: [PA16, PA22]
+      SCL: [PA17, PA23]
+
+  SERCOM4_UART:
+    type: uart
+    shares: SERCOM4
+    signals:
+      TX: [PA12, PA14, PB08, PB10]
+      RX: [PA12, PA13, PA14, PA15, PB08, PB09, PB10, PB11]
+      RTS: [PA14, PB10]
+      CTS: [PA15, PB11]
+      CK: [PA13, PA15, PB09, PB11]
+  SERCOM4_SPI:
+    type: spi
+    shares: SERCOM4
+    signals:
+      MOSI: [PA12, PA14, PA15, PB08, PB10, PB11]
+      MISO: [PA12, PA13, PA14, PA15, PB08, PB09, PB10, PB11]
+      SCK: [PA13, PA15, PB09, PB11]
+      NSS: [PA13, PA14, PB09, PB10]
+  SERCOM4_I2C:
+    type: i2c
+    shares: SERCOM4
+    signals:
+      SDA: [PA12]
+      SCL: [PA13]
+
+  SERCOM5_UART:
+    type: uart
+    shares: SERCOM5
+    signals:
+      TX: [PA20, PA22, PA24, PB02, PB22]
+      RX: [PA20, PA21, PA22, PA23, PA24, PA25, PB02, PB03, PB22, PB23]
+      RTS: [PA20, PA24, PB22]
+      CTS: [PA21, PA25, PB23]
+      CK: [PA21, PA23, PA25, PB03, PB23]
+  SERCOM5_SPI:
+    type: spi
+    shares: SERCOM5
+    signals:
+      MOSI: [PA20, PA21, PA22, PA24, PA25, PB02, PB22, PB23]
+      MISO: [PA20, PA21, PA22, PA23, PA24, PA25, PB02, PB03, PB22, PB23]
+      SCK: [PA21, PA23, PA25, PB03, PB23]
+      NSS: [PA20, PA23, PA24, PB03, PB22]
+  SERCOM5_I2C:
+    type: i2c
+    shares: SERCOM5
+    signals:
+      SDA: [PA22]
+      SCL: [PA23]
+
+  # TCC0 WO[4..7] and TCC1 WO[2..3] repeat the lower compare channels and are
+  # not listed. TCC1 and TCC2 have two compare channels each.
+  TCC0:
+    type: pwm
+    signals:
+      WO0: [PA04, PA08]
+      WO1: [PA05, PA09]
+      WO2: [PA10, PA18]
+      WO3: [PA11, PA19]
+  TCC1:
+    type: pwm
+    signals:
+      WO0: [PA06, PA10, PA30]
+      WO1: [PA07, PA11, PA31]
+  TCC2:
+    type: pwm
+    signals:
+      WO0: [PA00, PA12, PA16]
+      WO1: [PA01, PA13, PA17]
+  TC3:
+    type: pwm
+    signals:
+      WO0: [PA14, PA18]
+      WO1: [PA15, PA19]
+  TC4:
+    type: pwm
+    signals:
+      WO0: [PA22, PB08]
+      WO1: [PA23, PB09]
+  TC5:
+    type: pwm
+    signals:
+      WO0: [PA24, PB10]
+      WO1: [PA25, PB11]
+
+  USB:
+    type: usb
+    signals:
+      DM: [PA24]
+      DP: [PA25]

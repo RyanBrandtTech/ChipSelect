@@ -1,0 +1,127 @@
+schema_version: 1
+part_number: ATMEGA32U4-AU
+manufacturer: Microchip
+description: 8-bit AVR MCU with USB, 16 MHz, 32 KB flash, 2.5 KB RAM, TQFP-44
+datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7766-8-bit-AVR-ATmega16U4-32U4_Datasheet.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 6.89
+quantity_available: 3755
+
+core: AVR
+max_clock_mhz: 16
+flash_kb: 32
+ram_kb: 2.5
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TQFP-44
+  pin_count: 44
+  length_mm: 12.0
+  width_mm: 12.0
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: VCC, min_v: 2.7, max_v: 5.5, required: true, description: 4.5 V minimum above 8 MHz}
+    - {name: AVCC, min_v: 2.7, max_v: 5.5, required: true, description: Analog supply; connect to VCC through a low-pass filter}
+    - {name: UVCC, min_v: 3.0, max_v: 5.5, required: true, description: USB pad regulator input; 3.4 V or more to use the regulator; otherwise tie to UCAP at 3.0 to 3.6 V}
+  io_voltages: [3.3, 5.0]
+
+counts:
+  analog_inputs: 12
+  analog_outputs: 0
+  gpio: 26
+  spi: 1
+  i2c: 1
+  pwm_pins: 7
+  uart: 1
+  can: 0
+  usb: 1
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7,
+     PC6, PC7,
+     PD0, PD1, PD2, PD3, PD4, PD5, PD6, PD7,
+     PE2, PE6,
+     PF0, PF1, PF4, PF5, PF6, PF7]
+  dedicated: [D+, D-, VBUS]
+  special:
+    PE2: HWB bootloader strap
+    PF4: JTAG TCK
+    PF5: JTAG TMS
+    PF6: JTAG TDO
+    PF7: JTAG TDI
+
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [PF0]
+      IN1: [PF1]
+      IN4: [PF4]
+      IN5: [PF5]
+      IN6: [PF6]
+      IN7: [PF7]
+      IN8: [PD4]
+      IN9: [PD6]
+      IN10: [PD7]
+      IN11: [PB4]
+      IN12: [PB5]
+      IN13: [PB6]
+
+  SPI:
+    type: spi
+    signals:
+      NSS: [PB0]
+      SCK: [PB1]
+      MOSI: [PB2]
+      MISO: [PB3]
+
+  TWI:
+    type: i2c
+    signals:
+      SCL: [PD0]
+      SDA: [PD1]
+
+  USART1:
+    type: uart
+    signals:
+      RX: [PD2]
+      TX: [PD3]
+      CK: [PD5]
+      CTS: [PD5]
+      RTS: [PB7]
+
+  TC0:
+    type: pwm
+    signals:
+      OC0A: [PB7]
+      OC0B: [PD0]
+  TC1:
+    type: pwm
+    signals:
+      OC1A: [PB5]
+      OC1B: [PB6]
+      OC1C: [PB7]
+  TC3:
+    type: pwm
+    signals:
+      OC3A: [PC6]
+  # Complementary outputs of Timer 4 (PC6, PB5, PD6) are not listed.
+  TC4:
+    type: pwm
+    signals:
+      OC4A: [PC7]
+      OC4B: [PB6]
+      OC4D: [PD7]
+
+  USB:
+    type: usb
+    signals:
+      DM: [D-]
+      DP: [D+]
+      VBUS: [VBUS]

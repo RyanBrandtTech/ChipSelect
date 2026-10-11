@@ -1,0 +1,161 @@
+schema_version: 1
+part_number: RP2350A
+manufacturer: Raspberry Pi
+description: Dual Arm Cortex-M33 / Hazard3 RISC-V MCU, 150 MHz, 520 KB RAM, external QSPI flash, QFN-60
+datasheet: https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 1.47
+quantity_available: 2353
+
+core: Cortex-M33
+max_clock_mhz: 150
+flash_kb: 0
+ram_kb: 520
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: QFN-60
+  pin_count: 60
+  length_mm: 7.0
+  width_mm: 7.0
+  height_mm: 0.9
+
+power:
+  supplies:
+    - {name: IOVDD, min_v: 1.62, max_v: 3.63, required: true, description: Digital GPIO supply; nominal 1.8 V to 3.3 V}
+    - {name: QSPI_IOVDD, min_v: 1.62, max_v: 3.63, required: true, description: QSPI IO supply; match the external flash}
+    - {name: VREG_VIN, min_v: 2.7, max_v: 5.5, required: true, description: Input of the on-chip switching regulator that supplies DVDD}
+    - {name: VREG_AVDD, min_v: 3.135, max_v: 3.63, required: true, description: Analogue supply of the on-chip regulator}
+    - {name: USB_OTP_VDD, min_v: 3.135, max_v: 3.63, required: true, description: USB PHY and OTP supply}
+    - {name: ADC_AVDD, min_v: 1.62, max_v: 3.63, required: true, description: ADC supply; performance is compromised below 2.97 V}
+    - {name: DVDD, min_v: 1.05, max_v: 1.16, required: false, description: Core supply; normally fed from the on-chip regulator}
+  io_voltages: [1.8, 2.5, 3.3]
+  # "Fault tolerant" digital pins: tolerate 5.5 V only while IOVDD is powered at 3.3 V.
+  five_volt_tolerant_pins:
+    [GPIO0, GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO7, GPIO8, GPIO9,
+     GPIO10, GPIO11, GPIO12, GPIO13, GPIO14, GPIO15, GPIO16, GPIO17, GPIO18, GPIO19,
+     GPIO20, GPIO21, GPIO22, GPIO23, GPIO24, GPIO25]
+
+counts:
+  analog_inputs: 4
+  analog_outputs: 0
+  gpio: 30
+  spi: 2
+  i2c: 2
+  pwm_pins: 30
+  uart: 2
+  can: 0
+  usb: 1
+  ethernet: 0
+  ext_flash: 1
+
+pins:
+  gpio:
+    [GPIO0, GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO7, GPIO8, GPIO9,
+     GPIO10, GPIO11, GPIO12, GPIO13, GPIO14, GPIO15, GPIO16, GPIO17, GPIO18, GPIO19,
+     GPIO20, GPIO21, GPIO22, GPIO23, GPIO24, GPIO25, GPIO26, GPIO27, GPIO28, GPIO29]
+  dedicated: [USB_DM, USB_DP, QSPI_SCLK, QSPI_SS, QSPI_SD0, QSPI_SD1, QSPI_SD2, QSPI_SD3]
+
+# Each GPIO selects its function independently, so signals are listed per pin.
+# UART TX/RX appear both on the UART function (F2) and the UART AUX function (F11).
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [GPIO26]
+      IN1: [GPIO27]
+      IN2: [GPIO28]
+      IN3: [GPIO29]
+  SPI0:
+    type: spi
+    signals:
+      MISO: [GPIO0, GPIO4, GPIO16, GPIO20]
+      NSS: [GPIO1, GPIO5, GPIO17, GPIO21]
+      SCK: [GPIO2, GPIO6, GPIO18, GPIO22]
+      MOSI: [GPIO3, GPIO7, GPIO19, GPIO23]
+  SPI1:
+    type: spi
+    signals:
+      MISO: [GPIO8, GPIO12, GPIO24, GPIO28]
+      NSS: [GPIO9, GPIO13, GPIO25, GPIO29]
+      SCK: [GPIO10, GPIO14, GPIO26]
+      MOSI: [GPIO11, GPIO15, GPIO27]
+  I2C0:
+    type: i2c
+    signals:
+      SDA: [GPIO0, GPIO4, GPIO8, GPIO12, GPIO16, GPIO20, GPIO24, GPIO28]
+      SCL: [GPIO1, GPIO5, GPIO9, GPIO13, GPIO17, GPIO21, GPIO25, GPIO29]
+  I2C1:
+    type: i2c
+    signals:
+      SDA: [GPIO2, GPIO6, GPIO10, GPIO14, GPIO18, GPIO22, GPIO26]
+      SCL: [GPIO3, GPIO7, GPIO11, GPIO15, GPIO19, GPIO23, GPIO27]
+  UART0:
+    type: uart
+    signals:
+      TX: [GPIO0, GPIO2, GPIO12, GPIO14, GPIO16, GPIO18, GPIO28]
+      RX: [GPIO1, GPIO3, GPIO13, GPIO15, GPIO17, GPIO19, GPIO29]
+      CTS: [GPIO2, GPIO14, GPIO18]
+      RTS: [GPIO3, GPIO15, GPIO19]
+  UART1:
+    type: uart
+    signals:
+      TX: [GPIO4, GPIO6, GPIO8, GPIO10, GPIO20, GPIO22, GPIO24, GPIO26]
+      RX: [GPIO5, GPIO7, GPIO9, GPIO11, GPIO21, GPIO23, GPIO25, GPIO27]
+      CTS: [GPIO6, GPIO10, GPIO22, GPIO26]
+      RTS: [GPIO7, GPIO11, GPIO23, GPIO27]
+  PWM0:
+    type: pwm
+    signals:
+      A: [GPIO0, GPIO16]
+      B: [GPIO1, GPIO17]
+  PWM1:
+    type: pwm
+    signals:
+      A: [GPIO2, GPIO18]
+      B: [GPIO3, GPIO19]
+  PWM2:
+    type: pwm
+    signals:
+      A: [GPIO4, GPIO20]
+      B: [GPIO5, GPIO21]
+  PWM3:
+    type: pwm
+    signals:
+      A: [GPIO6, GPIO22]
+      B: [GPIO7, GPIO23]
+  PWM4:
+    type: pwm
+    signals:
+      A: [GPIO8, GPIO24]
+      B: [GPIO9, GPIO25]
+  PWM5:
+    type: pwm
+    signals:
+      A: [GPIO10, GPIO26]
+      B: [GPIO11, GPIO27]
+  PWM6:
+    type: pwm
+    signals:
+      A: [GPIO12, GPIO28]
+      B: [GPIO13, GPIO29]
+  PWM7:
+    type: pwm
+    signals:
+      A: [GPIO14]
+      B: [GPIO15]
+  USB:
+    type: usb
+    signals:
+      DM: [USB_DM]
+      DP: [USB_DP]
+  QSPI:
+    type: ext_flash
+    signals:
+      CLK: [QSPI_SCLK]
+      NCS: [QSPI_SS]
+      IO0: [QSPI_SD0]
+      IO1: [QSPI_SD1]
+      IO2: [QSPI_SD2]
+      IO3: [QSPI_SD3]

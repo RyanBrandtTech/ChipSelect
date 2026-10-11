@@ -245,6 +245,10 @@ def _search(part, spec, avoid):
         for name, signals in candidates[len(chosen)]:
             if any(name == taken for taken, _ in chosen):
                 continue
+            # Roles of one shared serial unit cannot be used together.
+            shares = part["peripherals"][name].get("shares")
+            if shares and any(part["peripherals"][taken].get("shares") == shares for taken, _ in chosen):
+                continue
             # Interchangeable interfaces: try each set of peripherals once.
             if any(
                 earlier["type"] == interface["type"]

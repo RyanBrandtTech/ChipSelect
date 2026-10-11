@@ -1,0 +1,142 @@
+schema_version: 1
+part_number: STM32G030F6P6
+manufacturer: STMicroelectronics
+description: Arm Cortex-M0+ MCU, 64 MHz, 32 KB flash, 8 KB RAM, TSSOP-20
+datasheet: https://www.st.com/resource/en/datasheet/stm32g030f6.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 1.42
+quantity_available: 1216
+
+core: Cortex-M0+
+max_clock_mhz: 64
+flash_kb: 32
+ram_kb: 8
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TSSOP-20
+  pin_count: 20
+  length_mm: 6.5
+  width_mm: 6.4
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: VDD, min_v: 2.0, max_v: 3.6, required: true, description: Single VDD/VDDA pin}
+  io_voltages: [2.5, 3.3]
+
+counts:
+  analog_inputs: 14
+  analog_outputs: 0
+  gpio: 17
+  spi: 2
+  i2c: 2
+  pwm_pins: 9
+  uart: 2
+  can: 0
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PB7_PB8, PC14_PB9, PC15, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PB0_PB1_PB2_PA8,
+     PA11_PA9, PA12_PA10, PA13, PA14_PA15, PB3_PB4_PB5_PB6]
+  special:
+    PA13: SWDIO debug
+    PA14_PA15: SWCLK debug and BOOT0 strap (PA14-BOOT0)
+    PC14_PB9: 32.768 kHz crystal (OSC32_IN) / external clock input (OSC_IN)
+    PC15: 32.768 kHz crystal (OSC32_OUT)
+
+# Several package pins have more than one port pad bonded to them; such a pin is named
+# after all of its pads (PB3_PB4_PB5_PB6 is pin 20) and carries the signals of all of them.
+# PA11_PA9 and PA12_PA10 are the datasheet pins PA11 [PA9] and PA12 [PA10].
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [PA0]
+      IN1: [PA1]
+      IN2: [PA2]
+      IN3: [PA3]
+      IN4: [PA4]
+      IN5: [PA5]
+      IN6: [PA6]
+      IN7: [PA7]
+      IN8: [PB0_PB1_PB2_PA8]
+      IN11: [PB7_PB8]
+      IN15: [PA11_PA9]
+      IN16: [PA12_PA10]
+      IN17: [PA13]
+      IN18: [PA14_PA15]
+
+  SPI1:
+    type: spi
+    signals:
+      SCK: [PA1, PA5, PB3_PB4_PB5_PB6]
+      MISO: [PA6, PA11_PA9, PB3_PB4_PB5_PB6]
+      MOSI: [PA2, PA7, PA12_PA10, PB3_PB4_PB5_PB6]
+      NSS: [PA4, PB0_PB1_PB2_PA8, PA14_PA15]
+  SPI2:
+    type: spi
+    signals:
+      SCK: [PB7_PB8, PA0]
+      MISO: [PA3, PB0_PB1_PB2_PA8, PA11_PA9, PB3_PB4_PB5_PB6]
+      MOSI: [PB7_PB8, PA4, PA12_PA10]
+      NSS: [PC14_PB9, PB0_PB1_PB2_PA8]
+
+  I2C1:
+    type: i2c
+    signals:
+      SCL: [PB7_PB8, PA11_PA9, PB3_PB4_PB5_PB6]
+      SDA: [PB7_PB8, PC14_PB9, PA12_PA10]
+  I2C2:
+    type: i2c
+    signals:
+      SCL: [PA11_PA9]
+      SDA: [PA12_PA10]
+
+  USART1:
+    type: uart
+    signals:
+      TX: [PA11_PA9, PB3_PB4_PB5_PB6]
+      RX: [PB7_PB8, PA12_PA10]
+      RTS: [PA12_PA10, PB3_PB4_PB5_PB6]
+      CTS: [PA11_PA9, PB3_PB4_PB5_PB6]
+      CK: [PA12_PA10, PB3_PB4_PB5_PB6]
+  USART2:
+    type: uart
+    signals:
+      TX: [PA2, PA14_PA15]
+      RX: [PA3, PA14_PA15]
+      RTS: [PA1]
+      CTS: [PA0]
+      CK: [PA1]
+
+  TIM1:
+    type: pwm
+    signals:
+      CH1: [PB0_PB1_PB2_PA8]
+      CH2: [PA11_PA9, PB3_PB4_PB5_PB6]
+      CH3: [PA12_PA10, PB3_PB4_PB5_PB6]
+      CH4: [PA11_PA9]
+  TIM3:
+    type: pwm
+    signals:
+      CH1: [PA6, PB3_PB4_PB5_PB6]
+      CH2: [PA7, PB3_PB4_PB5_PB6]
+      CH3: [PB0_PB1_PB2_PA8]
+      CH4: [PB0_PB1_PB2_PA8]
+  TIM14:
+    type: pwm
+    signals:
+      CH1: [PA4, PA7, PB0_PB1_PB2_PA8]
+  TIM16:
+    type: pwm
+    signals:
+      CH1: [PB7_PB8, PA6]
+  TIM17:
+    type: pwm
+    signals:
+      CH1: [PC14_PB9, PA7]

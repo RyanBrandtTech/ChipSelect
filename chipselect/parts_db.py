@@ -71,7 +71,7 @@ def area_mm2(part):
 def _cross_field_problems(part, path):
     problems = []
 
-    if part["part_number"] != path.stem:
+    if part["part_number"].replace("/", "_") != path.stem:
         problems.append(f"part_number {part['part_number']!r} does not match file name")
 
     gpio = set(part["pins"]["gpio"])
@@ -151,10 +151,8 @@ def load_parts(directory):
     Raises PartError for the first invalid part.
     """
     validator = Draft202012Validator(yaml.safe_load(SCHEMA_PATH.read_text()))
-    return {
-        path.stem: load_part(path, validator)
-        for path in sorted(Path(directory).glob("*.yaml"))
-    }
+    parts = (load_part(path, validator) for path in sorted(Path(directory).glob("*.yaml")))
+    return {part["part_number"]: part for part in parts}
 
 
 def main(argv):

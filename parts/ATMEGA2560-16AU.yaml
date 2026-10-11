@@ -1,0 +1,155 @@
+schema_version: 1
+part_number: ATMEGA2560-16AU
+manufacturer: Microchip
+description: 8-bit AVR MCU, 16 MHz, 256 KB flash, 8 KB RAM, TQFP-100
+datasheet: https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 13.18
+quantity_available: 941
+
+core: AVR
+max_clock_mhz: 16
+flash_kb: 256
+ram_kb: 8
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TQFP-100
+  pin_count: 100
+  length_mm: 16.0
+  width_mm: 16.0
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: VCC, min_v: 4.5, max_v: 5.5, required: true, description: Range of the 16 MHz speed grade}
+    - {name: AVCC, min_v: 4.5, max_v: 5.5, required: true, description: Analog supply; connect to VCC through a low-pass filter}
+  io_voltages: [5.0]
+
+counts:
+  analog_inputs: 16
+  analog_outputs: 0
+  gpio: 86
+  spi: 1
+  i2c: 1
+  pwm_pins: 15
+  uart: 4
+  can: 0
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
+     PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7,
+     PC0, PC1, PC2, PC3, PC4, PC5, PC6, PC7,
+     PD0, PD1, PD2, PD3, PD4, PD5, PD6, PD7,
+     PE0, PE1, PE2, PE3, PE4, PE5, PE6, PE7,
+     PF0, PF1, PF2, PF3, PF4, PF5, PF6, PF7,
+     PG0, PG1, PG2, PG3, PG4, PG5,
+     PH0, PH1, PH2, PH3, PH4, PH5, PH6, PH7,
+     PJ0, PJ1, PJ2, PJ3, PJ4, PJ5, PJ6, PJ7,
+     PK0, PK1, PK2, PK3, PK4, PK5, PK6, PK7,
+     PL0, PL1, PL2, PL3, PL4, PL5, PL6, PL7]
+  special:
+    PF4: JTAG TCK
+    PF5: JTAG TMS
+    PF6: JTAG TDO
+    PF7: JTAG TDI
+
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [PF0]
+      IN1: [PF1]
+      IN2: [PF2]
+      IN3: [PF3]
+      IN4: [PF4]
+      IN5: [PF5]
+      IN6: [PF6]
+      IN7: [PF7]
+      IN8: [PK0]
+      IN9: [PK1]
+      IN10: [PK2]
+      IN11: [PK3]
+      IN12: [PK4]
+      IN13: [PK5]
+      IN14: [PK6]
+      IN15: [PK7]
+
+  SPI:
+    type: spi
+    signals:
+      NSS: [PB0]
+      SCK: [PB1]
+      MOSI: [PB2]
+      MISO: [PB3]
+
+  TWI:
+    type: i2c
+    signals:
+      SCL: [PD0]
+      SDA: [PD1]
+
+  USART0:
+    type: uart
+    signals:
+      RX: [PE0]
+      TX: [PE1]
+      CK: [PE2]
+  USART1:
+    type: uart
+    signals:
+      RX: [PD2]
+      TX: [PD3]
+      CK: [PD5]
+  USART2:
+    type: uart
+    signals:
+      RX: [PH0]
+      TX: [PH1]
+      CK: [PH2]
+  USART3:
+    type: uart
+    signals:
+      RX: [PJ0]
+      TX: [PJ1]
+      CK: [PJ2]
+
+  TC0:
+    type: pwm
+    signals:
+      OC0A: [PB7]
+      OC0B: [PG5]
+  TC1:
+    type: pwm
+    signals:
+      OC1A: [PB5]
+      OC1B: [PB6]
+      OC1C: [PB7]
+  TC2:
+    type: pwm
+    signals:
+      OC2A: [PB4]
+      OC2B: [PH6]
+  TC3:
+    type: pwm
+    signals:
+      OC3A: [PE3]
+      OC3B: [PE4]
+      OC3C: [PE5]
+  TC4:
+    type: pwm
+    signals:
+      OC4A: [PH3]
+      OC4B: [PH4]
+      OC4C: [PH5]
+  TC5:
+    type: pwm
+    signals:
+      OC5A: [PL3]
+      OC5B: [PL4]
+      OC5C: [PL5]

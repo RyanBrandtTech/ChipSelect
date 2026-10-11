@@ -1,0 +1,227 @@
+schema_version: 1
+part_number: TM4C123GH6PMI
+manufacturer: Texas Instruments
+description: Arm Cortex-M4F Tiva C MCU, 80 MHz, 256 KB flash, 32 KB RAM, LQFP-64
+datasheet: https://www.ti.com/lit/gpn/tm4c123gh6pm
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 11.06
+quantity_available: 0
+
+core: Cortex-M4F
+max_clock_mhz: 80
+flash_kb: 256
+ram_kb: 32
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: LQFP-64
+  pin_count: 64
+  length_mm: 12.0
+  width_mm: 12.0
+  height_mm: 1.6
+
+power:
+  supplies:
+    - {name: VDD, min_v: 3.15, max_v: 3.63, required: true}
+    - {name: VDDA, min_v: 2.97, max_v: 3.63, required: true, description: Analog supply}
+    - {name: VDDC, min_v: 1.08, max_v: 1.32, required: false, description: 1.2 V core supplied by the on-chip LDO; decoupling capacitors only}
+    - {name: VBAT, min_v: 1.8, max_v: 3.6, required: false, description: Hibernation module battery supply; tie to VDD if unused}
+  io_voltages: [3.3]
+  # All GPIO except PB0, PB1, PD4 and PD5 are 5-V tolerant as inputs.
+  five_volt_tolerant_pins:
+    [PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
+     PB2, PB3, PB4, PB5, PB6, PB7,
+     PC0, PC1, PC2, PC3, PC4, PC5, PC6, PC7,
+     PD0, PD1, PD2, PD3, PD6, PD7,
+     PE0, PE1, PE2, PE3, PE4, PE5,
+     PF0, PF1, PF2, PF3, PF4]
+
+counts:
+  analog_inputs: 12
+  analog_outputs: 0
+  gpio: 43
+  spi: 4
+  i2c: 4
+  pwm_pins: 33
+  uart: 8
+  can: 2
+  usb: 1
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
+     PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7,
+     PC0, PC1, PC2, PC3, PC4, PC5, PC6, PC7,
+     PD0, PD1, PD2, PD3, PD4, PD5, PD6, PD7,
+     PE0, PE1, PE2, PE3, PE4, PE5,
+     PF0, PF1, PF2, PF3, PF4]
+  special:
+    PC0: JTAG TCK / SWCLK debug
+    PC1: JTAG TMS / SWDIO debug
+    PC2: JTAG TDI
+    PC3: JTAG TDO / SWO
+    PD7: NMI, locked (needs GPIOLOCK/GPIOCR unlock)
+    PF0: NMI, locked (needs GPIOLOCK/GPIOCR unlock)
+
+# Each pin selects its digital function independently through GPIOPCTL, so
+# signals are listed per pin (datasheet table 23-5).
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      AIN0: [PE3]
+      AIN1: [PE2]
+      AIN2: [PE1]
+      AIN3: [PE0]
+      AIN4: [PD3]
+      AIN5: [PD2]
+      AIN6: [PD1]
+      AIN7: [PD0]
+      AIN8: [PE5]
+      AIN9: [PE4]
+      AIN10: [PB4]
+      AIN11: [PB5]
+
+  UART0:
+    type: uart
+    signals: {RX: [PA0], TX: [PA1]}
+  UART1:
+    type: uart
+    signals:
+      RX: [PB0, PC4]
+      TX: [PB1, PC5]
+      RTS: [PC4, PF0]
+      CTS: [PC5, PF1]
+  UART2:
+    type: uart
+    signals: {RX: [PD6], TX: [PD7]}
+  UART3:
+    type: uart
+    signals: {RX: [PC6], TX: [PC7]}
+  UART4:
+    type: uart
+    signals: {RX: [PC4], TX: [PC5]}
+  UART5:
+    type: uart
+    signals: {RX: [PE4], TX: [PE5]}
+  UART6:
+    type: uart
+    signals: {RX: [PD4], TX: [PD5]}
+  UART7:
+    type: uart
+    signals: {RX: [PE0], TX: [PE1]}
+
+  # SSI in controller mode: SSInRx is MISO, SSInTx is MOSI, SSInFss is NSS.
+  SSI0:
+    type: spi
+    signals: {SCK: [PA2], NSS: [PA3], MISO: [PA4], MOSI: [PA5]}
+  SSI1:
+    type: spi
+    signals:
+      SCK: [PD0, PF2]
+      NSS: [PD1, PF3]
+      MISO: [PD2, PF0]
+      MOSI: [PD3, PF1]
+  SSI2:
+    type: spi
+    signals: {SCK: [PB4], NSS: [PB5], MISO: [PB6], MOSI: [PB7]}
+  SSI3:
+    type: spi
+    signals: {SCK: [PD0], NSS: [PD1], MISO: [PD2], MOSI: [PD3]}
+
+  I2C0:
+    type: i2c
+    signals: {SCL: [PB2], SDA: [PB3]}
+  I2C1:
+    type: i2c
+    signals: {SCL: [PA6], SDA: [PA7]}
+  I2C2:
+    type: i2c
+    signals: {SCL: [PE4], SDA: [PE5]}
+  I2C3:
+    type: i2c
+    signals: {SCL: [PD0], SDA: [PD1]}
+
+  CAN0:
+    type: can
+    signals:
+      RX: [PB4, PE4, PF0]
+      TX: [PB5, PE5, PF3]
+  CAN1:
+    type: can
+    signals: {RX: [PA0], TX: [PA1]}
+
+  USB0:
+    type: usb
+    signals:
+      DM: [PD4]
+      DP: [PD5]
+      ID: [PB0]
+      VBUS: [PB1]
+
+  # PWM modules. The two outputs of a generator (0/1, 2/3, 4/5, 6/7) share a
+  # period but have independent duty cycles.
+  PWM0:
+    type: pwm
+    signals:
+      M0PWM0: [PB6]
+      M0PWM1: [PB7]
+      M0PWM2: [PB4]
+      M0PWM3: [PB5]
+      M0PWM4: [PE4]
+      M0PWM5: [PE5]
+      M0PWM6: [PC4, PD0]
+      M0PWM7: [PC5, PD1]
+  PWM1:
+    type: pwm
+    signals:
+      M1PWM0: [PD0]
+      M1PWM1: [PD1]
+      M1PWM2: [PA6, PE4]
+      M1PWM3: [PA7, PE5]
+      M1PWM4: [PF0]
+      M1PWM5: [PF1]
+      M1PWM6: [PF2]
+      M1PWM7: [PF3]
+
+  # General-purpose timer CCP pins (PWM mode with the timer split into
+  # Timer A -> CCP0 and Timer B -> CCP1).
+  TIMER0:
+    type: pwm
+    signals: {CCP0: [PB6, PF0], CCP1: [PB7, PF1]}
+  TIMER1:
+    type: pwm
+    signals: {CCP0: [PB4, PF2], CCP1: [PB5, PF3]}
+  TIMER2:
+    type: pwm
+    signals: {CCP0: [PB0, PF4], CCP1: [PB1]}
+  TIMER3:
+    type: pwm
+    signals: {CCP0: [PB2], CCP1: [PB3]}
+  TIMER4:
+    type: pwm
+    signals: {CCP0: [PC0], CCP1: [PC1]}
+  TIMER5:
+    type: pwm
+    signals: {CCP0: [PC2], CCP1: [PC3]}
+  WTIMER0:
+    type: pwm
+    signals: {CCP0: [PC4], CCP1: [PC5]}
+  WTIMER1:
+    type: pwm
+    signals: {CCP0: [PC6], CCP1: [PC7]}
+  WTIMER2:
+    type: pwm
+    signals: {CCP0: [PD0], CCP1: [PD1]}
+  WTIMER3:
+    type: pwm
+    signals: {CCP0: [PD2], CCP1: [PD3]}
+  WTIMER4:
+    type: pwm
+    signals: {CCP0: [PD4], CCP1: [PD5]}
+  WTIMER5:
+    type: pwm
+    signals: {CCP0: [PD6], CCP1: [PD7]}

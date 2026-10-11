@@ -29,7 +29,9 @@ properties:
     const: 1
 
   part_number:
-    description: Full orderable part number. Must match the file name.
+    description: >
+      Full orderable part number. Must match the file name, with any "/"
+      written as "_" in the file name.
     type: string
     minLength: 1
 
@@ -263,6 +265,15 @@ properties:
             outputs (CH1N) are not listed. spi, i2c, uart, can and usb signals
             use the canonical names in chipselect/signals.py.
           enum: [adc, dac, spi, i2c, pwm, usb, ethernet, ext_flash, uart, can, other]
+        shares:
+          description: >
+            Name of an internal resource this peripheral is one role of, for
+            serial units that can be configured as one of several bus types
+            (a SERCOM, USCI or MSSP that is either SPI or I2C). Bus
+            peripherals with the same `shares` value cannot be used together.
+            Each role still counts towards its own headline count.
+          type: string
+          minLength: 1
         signals:
           $ref: "#/$defs/signal_map"
         pin_options:

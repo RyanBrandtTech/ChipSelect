@@ -1,0 +1,289 @@
+schema_version: 1
+part_number: STM32G474RET6
+manufacturer: STMicroelectronics
+description: Arm Cortex-M4F MCU, 170 MHz, 512 KB flash, 128 KB RAM, 5 ADCs, 3x FDCAN, USB FS, LQFP-64
+datasheet: https://www.st.com/resource/en/datasheet/stm32g474re.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 13.56
+quantity_available: 426
+
+core: Cortex-M4
+max_clock_mhz: 170
+flash_kb: 512
+ram_kb: 128
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: LQFP-64
+  pin_count: 64
+  length_mm: 12.0
+  width_mm: 12.0
+  height_mm: 1.6
+
+power:
+  supplies:
+    - {name: VDD, min_v: 1.71, max_v: 3.6, required: true}
+    - {name: VDDA, min_v: 1.62, max_v: 3.6, required: true, description: Analog supply; 1.8 V minimum for DAC/OPAMP/COMP and 2.4 V for VREFBUF}
+    - {name: VREF+, min_v: 1.62, max_v: 3.6, required: false, description: ADC/DAC reference; tie to VDDA or drive from the internal VREFBUF}
+    - {name: VBAT, min_v: 1.55, max_v: 3.6, required: false, description: RTC and backup domain; tie to VDD if unused}
+  io_voltages: [1.8, 2.5, 3.3]
+
+counts:
+  analog_inputs: 26
+  analog_outputs: 3
+  gpio: 52
+  spi: 3
+  i2c: 4
+  pwm_pins: 39
+  uart: 6
+  can: 3
+  usb: 1
+  ethernet: 0
+  ext_flash: 1
+
+pins:
+  gpio:
+    [PC13, PC14, PC15, PF0, PF1, PG10, PC0, PC1, PC2, PC3, PA0, PA1,
+     PA2, PA3, PA4, PA5, PA6, PA7, PC4, PC5, PB0, PB1, PB2, PB10,
+     PB11, PB12, PB13, PB14, PB15, PC6, PC7, PC8, PC9, PA8, PA9, PA10,
+     PA11, PA12, PA13, PA14, PA15, PC10, PC11, PC12, PD2, PB3, PB4, PB5,
+     PB6, PB7, PB8, PB9]
+  special:
+    PA13: SWDIO debug
+    PA14: SWCLK debug
+    PB8: BOOT0 strap
+    PG10: NRST reset (GPIO only if reset is disabled by option bytes)
+    PC14: 32.768 kHz crystal (OSC32_IN)
+    PC15: 32.768 kHz crystal (OSC32_OUT)
+    PF0: main crystal (OSC_IN)
+    PF1: main crystal (OSC_OUT)
+
+# STM32G4 pins select alternate functions independently, so signals are listed per pin.
+# ADC signals are named after the datasheet inputs they are (ADC12_IN1 = IN1 of ADC1 and ADC2).
+peripherals:
+  ADC1234:
+    type: adc
+    signals:
+      ADC1_IN3: [PA2]
+      ADC1_IN4: [PA3]
+      ADC1_IN5_ADC4_IN4: [PB14]
+      ADC1_IN10: [PF0]
+      ADC1_IN11_ADC4_IN3: [PB12]
+      ADC1_IN12_ADC3_IN1: [PB1]
+      ADC1_IN15_ADC3_IN12: [PB0]
+      ADC2_IN3: [PA6]
+      ADC2_IN4: [PA7]
+      ADC2_IN5: [PC4]
+      ADC2_IN10: [PF1]
+      ADC2_IN11: [PC5]
+      ADC2_IN12: [PB2]
+      ADC2_IN13: [PA5]
+      ADC2_IN15_ADC4_IN5: [PB15]
+      ADC2_IN17: [PA4]
+      ADC3_IN5: [PB13]
+      ADC12_IN1: [PA0]
+      ADC12_IN2: [PA1]
+      ADC12_IN6: [PC0]
+      ADC12_IN7: [PC1]
+      ADC12_IN8: [PC2]
+      ADC12_IN9: [PC3]
+      ADC12_IN14: [PB11]
+  ADC5:
+    type: adc
+    signals:
+      IN1: [PA8]
+      IN2: [PA9]
+
+  DAC1:
+    type: dac
+    signals:
+      OUT1: [PA4]
+      OUT2: [PA5]
+  DAC2:
+    type: dac
+    signals:
+      OUT1: [PA6]
+
+  SPI1:
+    type: spi
+    signals:
+      SCK: [PA5, PB3]
+      MISO: [PA6, PB4]
+      MOSI: [PA7, PB5]
+      NSS: [PA4, PA15]
+  SPI2:
+    type: spi
+    signals:
+      SCK: [PF1, PB13]
+      MISO: [PB14, PA10]
+      MOSI: [PB15, PA11]
+      NSS: [PF0, PB12]
+  SPI3:
+    type: spi
+    signals:
+      SCK: [PC10, PB3]
+      MISO: [PC11, PB4]
+      MOSI: [PC12, PB5]
+      NSS: [PA4, PA15]
+
+  I2C1:
+    type: i2c
+    signals:
+      SCL: [PA13, PA15, PB8]
+      SDA: [PA14, PB7, PB9]
+  I2C2:
+    type: i2c
+    signals:
+      SCL: [PC4, PA9]
+      SDA: [PF0, PA8]
+  I2C3:
+    type: i2c
+    signals:
+      SCL: [PC8, PA8]
+      SDA: [PC9, PC11, PB5]
+  I2C4:
+    type: i2c
+    signals:
+      SCL: [PC6, PA13]
+      SDA: [PC7, PB7]
+
+  LPUART1:
+    type: uart
+    signals:
+      TX: [PC1, PA2, PB11]
+      RX: [PC0, PA3, PB10]
+      RTS: [PB1, PB12]
+      CTS: [PA6, PB13]
+  UART4:
+    type: uart
+    signals:
+      TX: [PC10]
+      RX: [PC11]
+      RTS: [PA15]
+      CTS: [PB7]
+  UART5:
+    type: uart
+    signals:
+      TX: [PC12]
+      RX: [PD2]
+      RTS: [PB4]
+      CTS: [PB5]
+  USART1:
+    type: uart
+    signals:
+      TX: [PC4, PA9, PB6]
+      RX: [PC5, PA10, PB7]
+      RTS: [PA12]
+      CTS: [PA11]
+      CK: [PA8]
+  USART2:
+    type: uart
+    signals:
+      TX: [PA2, PA14, PB3]
+      RX: [PA3, PA15, PB4]
+      RTS: [PA1]
+      CTS: [PA0]
+      CK: [PA4, PB5]
+  USART3:
+    type: uart
+    signals:
+      TX: [PB10, PC10, PB9]
+      RX: [PB11, PC11, PB8]
+      RTS: [PB14]
+      CTS: [PB13, PA13]
+      CK: [PB12, PC12]
+
+  FDCAN1:
+    type: can
+    signals:
+      TX: [PA12, PB9]
+      RX: [PA11, PB8]
+  FDCAN2:
+    type: can
+    signals:
+      TX: [PB13, PB6]
+      RX: [PB12, PB5]
+  FDCAN3:
+    type: can
+    signals:
+      TX: [PA15, PB4]
+      RX: [PA8, PB3]
+
+  TIM1:
+    type: pwm
+    signals:
+      CH1: [PC0, PA8]
+      CH2: [PC1, PA9]
+      CH3: [PC2, PA10]
+      CH4: [PC3, PA11]
+  TIM2:
+    type: pwm
+    signals:
+      CH1: [PA0, PA5, PA15]
+      CH2: [PA1, PB3]
+      CH3: [PA2, PB10, PA9]
+      CH4: [PA3, PB11, PA10]
+  TIM3:
+    type: pwm
+    signals:
+      CH1: [PA6, PC6, PB4]
+      CH2: [PA4, PA7, PC7, PB5]
+      CH3: [PB0, PC8]
+      CH4: [PB1, PC9, PB7]
+  TIM4:
+    type: pwm
+    signals:
+      CH1: [PA11, PB6]
+      CH2: [PA12, PB7]
+      CH3: [PA13, PB8]
+      CH4: [PB9]
+  TIM5:
+    type: pwm
+    signals:
+      CH1: [PA0, PB2]
+      CH2: [PA1, PC12]
+      CH3: [PA2]
+      CH4: [PA3]
+  TIM8:
+    type: pwm
+    signals:
+      CH1: [PC6, PA15, PB6]
+      CH2: [PC7, PA14, PB8]
+      CH3: [PC8, PB9]
+      CH4: [PC9]
+  TIM15:
+    type: pwm
+    signals:
+      CH1: [PA2, PB14]
+      CH2: [PA3, PB15]
+  TIM16:
+    type: pwm
+    signals:
+      CH1: [PA6, PA12, PB4, PB8]
+  TIM17:
+    type: pwm
+    signals:
+      CH1: [PA7, PB5, PB9]
+  TIM20:
+    type: pwm
+    signals:
+      CH1: [PB2]
+      CH2: [PC2]
+      CH3: [PC8]
+
+  USB:
+    type: usb
+    signals:
+      DM: [PA11]
+      DP: [PA12]
+
+  QUADSPI:
+    type: ext_flash
+    signals:
+      CLK: [PA3, PB10]
+      NCS: [PA2, PB11]
+      IO0: [PB1]
+      IO1: [PB0]
+      IO2: [PA7]
+      IO3: [PA6]

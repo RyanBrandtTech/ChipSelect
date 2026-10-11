@@ -1,0 +1,139 @@
+schema_version: 1
+part_number: PIC32MX250F128B-I/SS
+manufacturer: Microchip
+description: 32-bit MIPS M4K MCU, 40 MHz, 128 KB flash, 32 KB RAM, USB OTG, PPS, SSOP-28
+datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/PIC32MX1XX2XX-28-36-44-PIN-DS60001168K.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 7.07
+quantity_available: 0
+
+core: MIPS32 M4K
+# Blank speed grade is 40 MHz; the 50 MHz grade is ordered as -50I/SS.
+max_clock_mhz: 40
+flash_kb: 128
+ram_kb: 32
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: SSOP-28
+  pin_count: 28
+  length_mm: 10.2
+  width_mm: 7.8
+  height_mm: 2.0
+
+power:
+  supplies:
+    - {name: VDD, min_v: 2.3, max_v: 3.6, required: true}
+    - {name: AVDD, min_v: 2.5, max_v: 3.6, required: true, description: Analog supply; greater of VDD - 0.3 V or 2.5 V; must always be connected}
+    - {name: VUSB3V3, min_v: 3.0, max_v: 3.6, required: true, description: USB transceiver supply; tie to VDD if USB is unused}
+    - {name: VCAP, min_v: 1.8, max_v: 1.8, required: false, description: Core supply from the on-chip regulator; needs only an external capacitor}
+  io_voltages: [2.5, 3.3]
+  five_volt_tolerant_pins: [RB5, RB7, RB8, RB9]
+
+counts:
+  analog_inputs: 9
+  analog_outputs: 0
+  gpio: 19
+  spi: 2
+  i2c: 2
+  pwm_pins: 19
+  uart: 2
+  can: 0
+  usb: 1
+  ethernet: 0
+  ext_flash: 0
+
+# USB devices in this family have no RB6 or RB12 (those pins are VBUS and VUSB3V3).
+pins:
+  gpio:
+    [RA0, RA1, RA2, RA3, RA4,
+     RB0, RB1, RB2, RB3, RB4, RB5, RB7, RB8, RB9, RB10, RB11, RB13, RB14, RB15]
+  dedicated: [VBUS]
+  special:
+    RB0: PGED1 ICSP/debug data
+    RB1: PGEC1 ICSP/debug clock
+    RA2: primary oscillator (OSC1/CLKI)
+    RA3: primary oscillator (OSC2/CLKO)
+    RB4: 32.768 kHz crystal (SOSCI)
+    RA4: 32.768 kHz crystal (SOSCO)
+
+# Peripheral Pin Select: every remappable signal is limited to one of four
+# pin groups (datasheet Tables 11-1 and 11-2), restricted here to the pins
+# that exist on the 28-pin USB device. SCKx, SCLx/SDAx, ANx and USB are fixed.
+#   group 1: RPA0 RPB3 RPB4 RPB15 RPB7
+#   group 2: RPA1 RPB5 RPB1 RPB11 RPB8
+#   group 3: RPA2 RPA4 RPB13 RPB2
+#   group 4: RPA3 RPB14 RPB0 RPB10 RPB9
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      AN0: [RA0]
+      AN1: [RA1]
+      AN2: [RB0]
+      AN3: [RB1]
+      AN4: [RB2]
+      AN5: [RB3]
+      AN9: [RB15]
+      AN10: [RB14]
+      AN11: [RB13]
+
+  SPI1:
+    type: spi
+    signals:
+      SCK: [RB14]
+      MOSI: &g23 [RA1, RB5, RB1, RB11, RB8, RA2, RA4, RB13, RB2]
+      MISO: &g2 [RA1, RB5, RB1, RB11, RB8]
+      NSS: &g1 [RA0, RB3, RB4, RB15, RB7]
+  SPI2:
+    type: spi
+    signals:
+      SCK: [RB15]
+      MOSI: *g23
+      MISO: &g3 [RA2, RA4, RB13, RB2]
+      NSS: &g4 [RA3, RB14, RB0, RB10, RB9]
+
+  I2C1:
+    type: i2c
+    signals:
+      SCL: [RB8]
+      SDA: [RB9]
+  I2C2:
+    type: i2c
+    signals:
+      SCL: [RB3]
+      SDA: [RB2]
+
+  UART1:
+    type: uart
+    signals:
+      TX: *g1
+      RX: *g3
+      RTS: *g4
+      CTS: *g2
+  UART2:
+    type: uart
+    signals:
+      TX: *g4
+      RX: *g2
+      RTS: *g1
+      CTS: *g3
+
+  # Output Compare modules in PWM mode; each selects Timer2 or Timer3 as time base.
+  OC:
+    type: pwm
+    signals:
+      OC1: *g1
+      OC2: *g2
+      OC3: *g4
+      OC4: *g3
+      OC5: *g3
+
+  USB:
+    type: usb
+    signals:
+      DP: [RB10]
+      DM: [RB11]
+      ID: [RB5]
+      VBUS: [VBUS]

@@ -1,0 +1,105 @@
+schema_version: 1
+part_number: MSP430G2553IPW20
+manufacturer: Texas Instruments
+description: 16-bit MSP430 value-line MCU, 16 MHz, 16 KB flash, 512 B RAM, TSSOP-20
+datasheet: https://www.ti.com/lit/gpn/msp430g2553
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 2.13
+quantity_available: 1151
+
+core: MSP430
+max_clock_mhz: 16
+flash_kb: 16
+ram_kb: 0.5
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: TSSOP-20
+  pin_count: 20
+  length_mm: 6.5
+  width_mm: 6.4
+  height_mm: 1.2
+
+power:
+  supplies:
+    - {name: DVCC, min_v: 1.8, max_v: 3.6, required: true, description: 2.2 V minimum for flash programming; 2.7 V for 12 MHz and 3.3 V for 16 MHz}
+  io_voltages: [1.8, 2.5, 3.3]
+
+counts:
+  analog_inputs: 8
+  analog_outputs: 0
+  gpio: 16
+  spi: 2
+  i2c: 1
+  pwm_pins: 7
+  uart: 1
+  can: 0
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+# Datasheet pin names are P1.0 etc.; "." is written "_" here.
+pins:
+  gpio:
+    [P1_0, P1_1, P1_2, P1_3, P1_4, P1_5, P1_6, P1_7,
+     P2_0, P2_1, P2_2, P2_3, P2_4, P2_5, P2_6, P2_7]
+  special:
+    P2_6: crystal (XIN)
+    P2_7: crystal (XOUT)
+
+# Pin functions are fixed per pin (PxSEL/PxSEL2); there is no remapping.
+# USCI_A0 is UART or SPI and USCI_B0 is SPI or I2C, hence `shares`.
+peripherals:
+  ADC10:
+    type: adc
+    signals:
+      A0: [P1_0]
+      A1: [P1_1]
+      A2: [P1_2]
+      A3: [P1_3]
+      A4: [P1_4]
+      A5: [P1_5]
+      A6: [P1_6]
+      A7: [P1_7]
+
+  USCI_A0_UART:
+    type: uart
+    shares: USCI_A0
+    signals:
+      RX: [P1_1]
+      TX: [P1_2]
+  USCI_A0_SPI:
+    type: spi
+    shares: USCI_A0
+    signals:
+      MISO: [P1_1]
+      MOSI: [P1_2]
+      SCK: [P1_4]
+      NSS: [P1_5]
+
+  USCI_B0_SPI:
+    type: spi
+    shares: USCI_B0
+    signals:
+      NSS: [P1_4]
+      SCK: [P1_5]
+      MISO: [P1_6]
+      MOSI: [P1_7]
+  USCI_B0_I2C:
+    type: i2c
+    shares: USCI_B0
+    signals:
+      SCL: [P1_6]
+      SDA: [P1_7]
+
+  # TA0.2 is only bonded out on port 3 (28/32-pin packages).
+  TA0:
+    type: pwm
+    signals:
+      TA0_1: [P1_2, P1_6, P2_6]
+  TA1:
+    type: pwm
+    signals:
+      TA1_1: [P2_1, P2_2]
+      TA1_2: [P2_4, P2_5]

@@ -163,8 +163,26 @@ class EvaluatorTest(unittest.TestCase):
 
     def test_database_against_example(self):
         recommended, rejected = evaluate(self.spec, self.parts)
-        self.assertEqual([entry["part_number"] for entry in recommended], ["STM32F103C8T6", "STM32F103CBT6"])
-        self.assertEqual(sorted(rejected), ["ATMEGA328P-AU", "RP2040"])
+        numbers = [entry["part_number"] for entry in recommended]
+        self.assertEqual(numbers, sorted(numbers))
+        self.assertTrue({"STM32F103C8T6", "STM32F103CBT6"} <= set(numbers))
+        self.assertTrue({"ATMEGA328P-AU", "RP2040"} <= set(rejected))
+        self.assertEqual(len(recommended) + len(rejected), len(self.parts))
+
+    def test_shared_serial_unit_serves_one_role(self):
+        part = {
+            "pins": {"gpio": ["P1", "P2", "P3", "P4", "P5"]},
+            "peripherals": {
+                "MSSP_SPI": {"type": "spi", "shares": "MSSP", "signals": {"SCK": ["P1"], "MISO": ["P2"], "MOSI": ["P3"]}},
+                "MSSP_I2C": {"type": "i2c", "shares": "MSSP", "signals": {"SCL": ["P4"], "SDA": ["P5"]}},
+            },
+        }
+        spi = {"name": "flash", "type": "spi", "signals": ["SCK", "MISO", "MOSI"]}
+        i2c = {"name": "sensor", "type": "i2c", "signals": ["SCL", "SDA"]}
+        assignment, _ = assign_pins(part, {"interfaces": [i2c], "gpio": 0})
+        self.assertEqual(assignment["sensor"]["peripheral"], "MSSP_I2C")
+        assignment, _ = assign_pins(part, {"interfaces": [spi, i2c], "gpio": 0})
+        self.assertIsNone(assignment)
 
     def test_too_many_channels_rejects(self):
         spec = self.spec_with(interfaces=[{"name": "sense", "type": "adc", "channels": 11}])

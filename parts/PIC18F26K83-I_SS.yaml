@@ -1,0 +1,151 @@
+schema_version: 1
+part_number: PIC18F26K83-I/SS
+manufacturer: Microchip
+description: 8-bit PIC18 MCU, 64 MHz, 64 KB flash, 4 KB RAM, CAN, 12-bit ADC, PPS, 2.3-5.5 V, SSOP-28
+datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/40001943A.pdf
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 2.80
+quantity_available: 155
+
+core: PIC18
+max_clock_mhz: 64
+flash_kb: 64
+ram_kb: 4
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: SSOP-28
+  pin_count: 28
+  length_mm: 10.2
+  width_mm: 7.8
+  height_mm: 2.0
+
+power:
+  supplies:
+    - {name: VDD, min_v: 2.3, max_v: 5.5, required: true, description: PIC18F (not LF) operating range}
+  io_voltages: [2.5, 3.3, 5.0]
+
+counts:
+  analog_inputs: 24
+  analog_outputs: 2
+  gpio: 25
+  spi: 1
+  i2c: 2
+  pwm_pins: 24
+  uart: 2
+  can: 1
+  usb: 0
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7,
+     RB0, RB1, RB2, RB3, RB4, RB5, RB6, RB7,
+     RC0, RC1, RC2, RC3, RC4, RC5, RC6, RC7,
+     RE3]
+  special:
+    RB6: ICSPCLK programming/debug clock
+    RB7: ICSPDAT programming/debug data
+    RE3: MCLR/VPP reset; input-only when used as a port pin
+    RA7: primary oscillator (OSC1/CLKIN)
+    RA6: primary oscillator (OSC2/CLKOUT)
+    RC0: 32.768 kHz crystal (SOSCO)
+    RC1: 32.768 kHz crystal (SOSCI)
+
+# Peripheral Pin Select: each signal can be routed to any pin of the ports
+# the datasheet lists for it (Table 17-1 inputs, Table 17-2 outputs).
+# Bidirectional signals use the ports common to both tables.
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      ANA0: [RA0]
+      ANA1: [RA1]
+      ANA2: [RA2]
+      ANA3: [RA3]
+      ANA4: [RA4]
+      ANA5: [RA5]
+      ANA6: [RA6]
+      ANA7: [RA7]
+      ANB0: [RB0]
+      ANB1: [RB1]
+      ANB2: [RB2]
+      ANB3: [RB3]
+      ANB4: [RB4]
+      ANB5: [RB5]
+      ANB6: [RB6]
+      ANB7: [RB7]
+      ANC0: [RC0]
+      ANC1: [RC1]
+      ANC2: [RC2]
+      ANC3: [RC3]
+      ANC4: [RC4]
+      ANC5: [RC5]
+      ANC6: [RC6]
+      ANC7: [RC7]
+
+  # One 5-bit DAC with two output pins (DAC1OUT1, DAC1OUT2).
+  DAC1:
+    type: dac
+    signals:
+      OUT: [RA2, RB7]
+
+  SPI1:
+    type: spi
+    signals:
+      SCK: &bc [RB0, RB1, RB2, RB3, RB4, RB5, RB6, RB7, RC0, RC1, RC2, RC3, RC4, RC5, RC6, RC7]
+      MISO: *bc
+      MOSI: *bc
+      NSS: &ac [RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7, RC0, RC1, RC2, RC3, RC4, RC5, RC6, RC7]
+
+  # Only RB1, RB2, RC3 and RC4 have I2C/SMBus-specific input thresholds;
+  # other pins work with standard TTL/ST levels.
+  I2C1:
+    type: i2c
+    signals:
+      SCL: *bc
+      SDA: *bc
+  I2C2:
+    type: i2c
+    signals:
+      SCL: *bc
+      SDA: *bc
+
+  UART1:
+    type: uart
+    signals:
+      TX: *bc
+      RX: *bc
+      RTS: *bc
+      CTS: *bc
+  UART2:
+    type: uart
+    signals:
+      TX: *bc
+      RX: *bc
+      RTS: *bc
+      CTS: *bc
+
+  CAN:
+    type: can
+    signals:
+      TX: *bc
+      RX: *bc
+
+  # CCP1-4 (PWM mode) and PWM5-8; each selects Timer2, 4 or 6 as time base.
+  CCP:
+    type: pwm
+    signals:
+      CCP1: *bc
+      CCP2: *bc
+      CCP3: *bc
+      CCP4: *bc
+  PWM:
+    type: pwm
+    signals:
+      PWM5: *ac
+      PWM6: *ac
+      PWM7: *ac
+      PWM8: *ac

@@ -1,0 +1,171 @@
+schema_version: 1
+part_number: STM32L432KCU6
+manufacturer: STMicroelectronics
+description: Ultra-low-power Arm Cortex-M4F MCU, 80 MHz, 256 KB flash, 64 KB RAM, USB FS, CAN, QUADSPI, UFQFPN-32
+datasheet: https://www.st.com/resource/en/datasheet/stm32l432kc.pdf
+
+# Price and stock as of 2026-10-11; not live data.
+unit_cost_usd: 6.49
+quantity_available: 72
+
+core: Cortex-M4
+max_clock_mhz: 80
+flash_kb: 256
+ram_kb: 64
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: UFQFPN-32
+  pin_count: 32
+  length_mm: 5.0
+  width_mm: 5.0
+  height_mm: 0.6
+
+power:
+  supplies:
+    - {name: VDD, min_v: 1.71, max_v: 3.6, required: true, description: 3.0 V minimum when USB is used}
+    - {name: VDDA, min_v: 1.62, max_v: 3.6, required: true, description: Combined VDDA/VREF+ pin; 1.8 V minimum for DAC/OPAMP}
+  io_voltages: [1.8, 2.5, 3.3]
+
+counts:
+  analog_inputs: 10
+  analog_outputs: 2
+  gpio: 26
+  spi: 2
+  i2c: 2
+  pwm_pins: 12
+  uart: 3
+  can: 1
+  usb: 1
+  ethernet: 0
+  ext_flash: 1
+
+pins:
+  gpio:
+    [PC14, PC15, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PB0, PB1,
+     PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15, PB3, PB4, PB5, PB6,
+     PB7, PH3]
+  special:
+    PA13: SWDIO debug
+    PA14: SWCLK debug
+    PH3: BOOT0 strap
+    PC14: 32.768 kHz crystal (OSC32_IN)
+    PC15: 32.768 kHz crystal (OSC32_OUT)
+
+# STM32L4 pins select alternate functions independently, so signals are listed per pin.
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN5: [PA0]
+      IN6: [PA1]
+      IN7: [PA2]
+      IN8: [PA3]
+      IN9: [PA4]
+      IN10: [PA5]
+      IN11: [PA6]
+      IN12: [PA7]
+      IN15: [PB0]
+      IN16: [PB1]
+
+  DAC1:
+    type: dac
+    signals:
+      OUT1: [PA4]
+      OUT2: [PA5]
+
+  SPI1:
+    type: spi
+    signals:
+      SCK: [PA1, PA5, PB3]
+      MISO: [PA6, PA11, PB4]
+      MOSI: [PA7, PA12, PB5]
+      NSS: [PA4, PB0, PA15]
+  SPI3:
+    type: spi
+    signals:
+      SCK: [PB3]
+      MISO: [PB4]
+      MOSI: [PB5]
+      NSS: [PA4, PA15]
+
+  I2C1:
+    type: i2c
+    signals:
+      SCL: [PA9, PB6]
+      SDA: [PA10, PB7]
+  I2C3:
+    type: i2c
+    signals:
+      SCL: [PA7]
+      SDA: [PB4]
+
+  LPUART1:
+    type: uart
+    signals:
+      TX: [PA2]
+      RX: [PA3]
+      RTS: [PB1]
+      CTS: [PA6]
+  USART1:
+    type: uart
+    signals:
+      TX: [PA9, PB6]
+      RX: [PA10, PB7]
+      RTS: [PA12, PB3]
+      CTS: [PA11, PB4]
+      CK: [PA8, PB5]
+  USART2:
+    type: uart
+    signals:
+      TX: [PA2]
+      RX: [PA3, PA15]
+      RTS: [PA1]
+      CTS: [PA0]
+      CK: [PA4]
+
+  CAN1:
+    type: can
+    signals:
+      TX: [PA12]
+      RX: [PA11]
+
+  TIM1:
+    type: pwm
+    signals:
+      CH1: [PA8]
+      CH2: [PA9]
+      CH3: [PA10]
+      CH4: [PA11]
+  TIM2:
+    type: pwm
+    signals:
+      CH1: [PA0, PA5, PA15]
+      CH2: [PA1, PB3]
+      CH3: [PA2]
+      CH4: [PA3]
+  TIM15:
+    type: pwm
+    signals:
+      CH1: [PA2]
+      CH2: [PA3]
+  TIM16:
+    type: pwm
+    signals:
+      CH1: [PA6]
+
+  USB:
+    type: usb
+    signals:
+      DM: [PA11]
+      DP: [PA12]
+
+  QUADSPI:
+    type: ext_flash
+    signals:
+      CLK: [PA3]
+      NCS: [PA2]
+      IO0: [PB1]
+      IO1: [PB0]
+      IO2: [PA7]
+      IO3: [PA6]
