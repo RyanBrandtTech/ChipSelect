@@ -205,6 +205,40 @@ the disclaimer and the sources and assumptions behind each part.
   for format, not for whether it reflects what you meant. Read it and
   `agent_assumptions.md` before trusting a result.
 
+## Future improvements
+
+- **Live price and stock.** Fetch current figures from distributor APIs at
+  run time instead of storing a snapshot in each part file, so the supply
+  picture is always current.
+- **Automated database import.** Generate part files from machine-readable
+  sources such as ST's open pin data and Microchip's device files. This is
+  the practical route from 24 parts to thousands, and it removes
+  transcription errors.
+- **Verified data.** Record the source and review status of each part in the
+  part file itself, and have a person check entries against the datasheet.
+- **Show why parts were rejected.** The evaluator already knows the reason
+  each part failed; a tab in the summary listing near misses would show which
+  requirement to relax to widen the choice.
+- **Preferences and ranking.** Allow "nice to have" requirements and
+  alternatives ("USB or UART for the host link"), and rank the parts that fit
+  rather than only filtering them.
+- **Drop-in alternatives.** Flag recommended parts that are pin-compatible
+  with one another, since those are the alternatives that survive a shortage
+  without a board change.
+- **Richer part model.** Capture what the specification cannot yet express:
+  5 V-tolerant and interrupt-capable pins, ADC resolution, low-power modes,
+  wireless connectivity, and peripheral features such as USB speed.
+- **Better pin assignments.** Choose among workable assignments by
+  preference, such as keeping a bus on adjacent pins, and export the result
+  to vendor configuration tools or a schematic symbol.
+- **Clarifying questions.** Let the agent ask the user about gaps in the
+  requirements instead of always assuming, and support other ways of running
+  the agent than Claude Code.
+- **Other part types.** Extend the approach beyond microcontrollers to other
+  parts that are critical to a design, such as power regulators and sensors.
+- **Scale and packaging.** Pre-filter and cache so that evaluation stays fast
+  on a large database, and package the tool for installation with `pip`.
+
 ## Project layout
 
 | Path | Contents |
