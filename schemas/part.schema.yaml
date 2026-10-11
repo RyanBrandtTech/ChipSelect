@@ -1,0 +1,294 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "chipselect/part.schema.yaml"
+title: ChipSelect Parts Database entry
+description: >
+  One microcontroller, stored as parts/<part_number>.yaml. Checks that span
+  several fields (pin references, counts agreeing with the pin map) cannot be
+  expressed here and are enforced by chipselect/parts_db.py.
+type: object
+additionalProperties: false
+required:
+  - schema_version
+  - part_number
+  - manufacturer
+  - unit_cost_usd
+  - quantity_available
+  - core
+  - max_clock_mhz
+  - flash_kb
+  - ram_kb
+  - temperature
+  - package
+  - power
+  - counts
+  - pins
+  - peripherals
+
+properties:
+  schema_version:
+    const: 1
+
+  part_number:
+    description: Full orderable part number. Must match the file name.
+    type: string
+    minLength: 1
+
+  manufacturer:
+    type: string
+    minLength: 1
+
+  description:
+    type: string
+
+  datasheet:
+    description: URL of the datasheet the entry was transcribed from.
+    type: string
+
+  unit_cost_usd:
+    description: Unit cost in US dollars at quantity 1.
+    type: number
+    minimum: 0
+
+  quantity_available:
+    description: Units in stock (availability).
+    type: integer
+    minimum: 0
+
+  core:
+    description: CPU core, e.g. Cortex-M3.
+    type: string
+    minLength: 1
+
+  max_clock_mhz:
+    description: Maximum CPU clock frequency.
+    type: number
+    exclusiveMinimum: 0
+
+  flash_kb:
+    description: Internal program flash in KB (1 KB = 1024 bytes). 0 if the part has none.
+    type: number
+    minimum: 0
+
+  ram_kb:
+    description: Internal RAM in KB (1 KB = 1024 bytes).
+    type: number
+    exclusiveMinimum: 0
+
+  temperature:
+    description: Operating ambient temperature range in degrees Celsius.
+    type: object
+    additionalProperties: false
+    required: [min_c, max_c]
+    properties:
+      min_c:
+        type: number
+      max_c:
+        type: number
+
+  package:
+    description: >
+      Physical package. Length and width are the full board footprint
+      including leads. Surface area is not stored; it is always
+      length_mm * width_mm.
+    type: object
+    additionalProperties: false
+    required: [name, pin_count, length_mm, width_mm, height_mm]
+    properties:
+      name:
+        type: string
+        minLength: 1
+      pin_count:
+        type: integer
+        minimum: 1
+      length_mm:
+        type: number
+        exclusiveMinimum: 0
+      width_mm:
+        type: number
+        exclusiveMinimum: 0
+      height_mm:
+        type: number
+        exclusiveMinimum: 0
+
+  power:
+    type: object
+    additionalProperties: false
+    required: [supplies, io_voltages]
+    properties:
+      supplies:
+        description: Supply rails the part has. At least one must be required.
+        type: array
+        minItems: 1
+        items:
+          type: object
+          additionalProperties: false
+          required: [name, min_v, max_v, required]
+          properties:
+            name:
+              type: string
+              minLength: 1
+            min_v:
+              type: number
+            max_v:
+              type: number
+            required:
+              description: False for rails that may be left unpowered or tied off (e.g. VBAT).
+              type: boolean
+            description:
+              type: string
+      io_voltages:
+        description: Nominal I/O logic levels the part can operate its pins at, in volts.
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: number
+          exclusiveMinimum: 0
+      five_volt_tolerant_pins:
+        description: Pins that accept 5 V inputs while running from a lower I/O voltage.
+        type: array
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/pin_name"
+
+  counts:
+    description: >
+      Headline resource counts. Each is redundant with the pins/peripherals
+      sections and must agree with them; the loader rejects a part where they
+      differ.
+    type: object
+    additionalProperties: false
+    required:
+      - analog_inputs
+      - analog_outputs
+      - gpio
+      - spi
+      - i2c
+      - pwm_pins
+      - uart
+      - can
+      - usb
+      - ethernet
+      - ext_flash
+    properties:
+      analog_inputs:
+        description: Distinct pins usable as an ADC input.
+        $ref: "#/$defs/count"
+      analog_outputs:
+        description: Distinct pins usable as a DAC output.
+        $ref: "#/$defs/count"
+      gpio:
+        description: Pins usable as general-purpose I/O.
+        $ref: "#/$defs/count"
+      spi:
+        description: SPI buses.
+        $ref: "#/$defs/count"
+      i2c:
+        description: I2C buses.
+        $ref: "#/$defs/count"
+      pwm_pins:
+        description: Distinct pins usable as a PWM output.
+        $ref: "#/$defs/count"
+      uart:
+        description: UARTs and USARTs.
+        $ref: "#/$defs/count"
+      can:
+        description: CAN controllers.
+        $ref: "#/$defs/count"
+      usb:
+        description: USB drivers.
+        $ref: "#/$defs/count"
+      ethernet:
+        description: Ethernet MAC/PHY peripherals.
+        $ref: "#/$defs/count"
+      ext_flash:
+        description: External flash memory controllers (QSPI, OSPI, FMC and similar).
+        $ref: "#/$defs/count"
+
+  pins:
+    description: >
+      Signal pins of the package, by the name used in the datasheet. Power,
+      ground and other pins that carry no assignable signal are omitted.
+    type: object
+    additionalProperties: false
+    required: [gpio]
+    properties:
+      gpio:
+        description: Pins usable as general-purpose I/O.
+        type: array
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/pin_name"
+      dedicated:
+        description: Pins that carry peripheral signals but cannot be used as GPIO.
+        type: array
+        uniqueItems: true
+        items:
+          $ref: "#/$defs/pin_name"
+      special:
+        description: >
+          Pins a design normally keeps for another purpose (debug port, boot
+          strap, crystal), mapped to that purpose. The evaluator assigns them
+          only when the part does not fit otherwise, and reports any it used.
+        type: object
+        propertyNames:
+          $ref: "#/$defs/pin_name"
+        additionalProperties:
+          type: string
+          minLength: 1
+
+  peripherals:
+    description: >
+      Bipartite peripheral-to-pin connectivity. Maps each internal peripheral
+      instance to its signals, and each signal to every pin it can be
+      multiplexed onto. A signal used by a design occupies exactly one of its
+      pins, and a pin can carry only one signal. A peripheral gives either
+      `signals`, when each signal is multiplexed independently, or
+      `pin_options`, when its pins are remapped together as a group.
+    type: object
+    propertyNames:
+      pattern: "^[A-Za-z][A-Za-z0-9_]*$"
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [type]
+      oneOf:
+        - required: [signals]
+        - required: [pin_options]
+      properties:
+        type:
+          description: >
+            adc and dac signals are individual channels. pwm signals are
+            independently controllable timer output channels, so complementary
+            outputs (CH1N) are not listed. spi, i2c, uart, can and usb signals
+            use the canonical names in chipselect/signals.py.
+          enum: [adc, dac, spi, i2c, pwm, usb, ethernet, ext_flash, uart, can, other]
+        signals:
+          $ref: "#/$defs/signal_map"
+        pin_options:
+          description: >
+            Alternative pin sets for the whole peripheral. A design uses
+            exactly one option, and every signal takes its pin from it.
+          type: array
+          minItems: 2
+          items:
+            $ref: "#/$defs/signal_map"
+
+$defs:
+  signal_map:
+    type: object
+    minProperties: 1
+    propertyNames:
+      pattern: "^[A-Za-z][A-Za-z0-9_]*$"
+    additionalProperties:
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        $ref: "#/$defs/pin_name"
+  count:
+    type: integer
+    minimum: 0
+  pin_name:
+    type: string
+    pattern: "^[A-Za-z0-9_+-]+$"

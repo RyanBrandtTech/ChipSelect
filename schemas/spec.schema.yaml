@@ -1,0 +1,165 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "chipselect/spec.schema.yaml"
+title: ChipSelect Formal Specification
+description: >
+  The hard requirements a microcontroller must meet, written by the
+  Specification Agent as formal_specification.yaml and consumed by the Part
+  Evaluator. Every statement is a hard requirement: a part is recommended
+  only if it satisfies all of them, including a conflict-free assignment of
+  every interface signal and GPIO to its own pin.
+type: object
+additionalProperties: false
+required: [schema_version, title, limits, power, interfaces, gpio]
+
+properties:
+  schema_version:
+    const: 1
+
+  title:
+    description: Short name of the design.
+    type: string
+    minLength: 1
+
+  limits:
+    description: >
+      Bounds on scalar part attributes. Each is optional; an omitted limit
+      leaves that attribute unconstrained.
+    type: object
+    additionalProperties: false
+    properties:
+      max_unit_cost_usd:
+        type: number
+        minimum: 0
+      min_quantity_available:
+        type: integer
+        minimum: 0
+      max_area_mm2:
+        description: Upper bound on package length times width.
+        type: number
+        exclusiveMinimum: 0
+      max_length_mm:
+        description: >
+          Upper bound on the longer footprint side. The part may be rotated,
+          so max_length_mm and max_width_mm bound the longer and shorter side
+          of the package respectively.
+        type: number
+        exclusiveMinimum: 0
+      max_width_mm:
+        description: Upper bound on the shorter footprint side.
+        type: number
+        exclusiveMinimum: 0
+      max_height_mm:
+        type: number
+        exclusiveMinimum: 0
+      min_flash_kb:
+        type: number
+        minimum: 0
+      min_ram_kb:
+        type: number
+        minimum: 0
+      min_clock_mhz:
+        description: The part's maximum CPU clock must be at least this.
+        type: number
+        exclusiveMinimum: 0
+      cores:
+        description: Acceptable CPU cores; the part's core must equal one of them.
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+      operating_temperature:
+        description: Ambient range the part's operating range must fully cover.
+        type: object
+        additionalProperties: false
+        required: [min_c, max_c]
+        properties:
+          min_c:
+            type: number
+          max_c:
+            type: number
+
+  power:
+    type: object
+    additionalProperties: false
+    required: [supply_rails_v, io_voltage_v]
+    properties:
+      supply_rails_v:
+        description: >
+          Voltage rails the board provides. Every required supply of the part
+          must accept at least one of them.
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: number
+          exclusiveMinimum: 0
+      io_voltage_v:
+        description: Logic level the part's I/O must operate at; must be one of the part's io_voltages.
+        type: number
+        exclusiveMinimum: 0
+
+  interfaces:
+    description: >
+      Peripheral resources the design uses. Each bus entry consumes one
+      distinct peripheral instance of its type; each channel entry consumes
+      the stated number of distinct channels of its type, on distinct pins.
+    type: array
+    items:
+      oneOf:
+        - $ref: "#/$defs/bus_interface"
+        - $ref: "#/$defs/channel_interface"
+
+  gpio:
+    description: >
+      Plain GPIO pins needed in addition to all interface pins (chip selects,
+      LEDs, buttons, interrupt lines and so on).
+    type: integer
+    minimum: 0
+
+$defs:
+  name:
+    description: Unique label for the interface, used in reports.
+    type: string
+    pattern: "^[a-z][a-z0-9_]*$"
+
+  bus_interface:
+    type: object
+    additionalProperties: false
+    required: [name, type, signals]
+    properties:
+      name:
+        $ref: "#/$defs/name"
+      type:
+        enum: [spi, i2c, uart, can, usb, ethernet, ext_flash]
+      signals:
+        description: >
+          The signals of the bus that must reach a pin. For spi, i2c, uart,
+          can and usb these are the canonical names in chipselect/signals.py;
+          list only the ones actually wired (e.g. omit NSS when chip selects
+          are GPIO).
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          pattern: "^[A-Za-z][A-Za-z0-9_]*$"
+      description:
+        type: string
+
+  channel_interface:
+    type: object
+    additionalProperties: false
+    required: [name, type, channels]
+    properties:
+      name:
+        $ref: "#/$defs/name"
+      type:
+        enum: [adc, dac, pwm]
+      channels:
+        description: Number of channels needed, each on its own pin.
+        type: integer
+        minimum: 1
+      description:
+        type: string

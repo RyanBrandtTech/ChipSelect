@@ -1,0 +1,154 @@
+schema_version: 1
+part_number: STM32F103C8T6
+manufacturer: STMicroelectronics
+description: Arm Cortex-M3 MCU, 72 MHz, 64 KB flash, 20 KB RAM, LQFP-48
+datasheet: https://www.st.com/resource/en/datasheet/stm32f103c8.pdf
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 2.50
+quantity_available: 10000
+
+core: Cortex-M3
+max_clock_mhz: 72
+flash_kb: 64
+ram_kb: 20
+temperature: {min_c: -40, max_c: 85}
+
+package:
+  name: LQFP-48
+  pin_count: 48
+  length_mm: 9.0
+  width_mm: 9.0
+  height_mm: 1.6
+
+power:
+  supplies:
+    - {name: VDD, min_v: 2.0, max_v: 3.6, required: true}
+    - {name: VDDA, min_v: 2.0, max_v: 3.6, required: true, description: Analog supply; 2.4 V minimum when the ADC is used}
+    - {name: VBAT, min_v: 1.8, max_v: 3.6, required: false, description: RTC and backup domain; tie to VDD if unused}
+  io_voltages: [3.3]
+  five_volt_tolerant_pins:
+    [PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15,
+     PB2, PB3, PB4, PB6, PB7, PB8, PB9, PB10, PB11, PB12, PB13, PB14, PB15]
+
+counts:
+  analog_inputs: 10
+  analog_outputs: 0
+  gpio: 37
+  spi: 2
+  i2c: 2
+  pwm_pins: 22
+  uart: 3
+  can: 1
+  usb: 1
+  ethernet: 0
+  ext_flash: 0
+
+pins:
+  gpio:
+    [PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15,
+     PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PB8, PB9, PB10, PB11, PB12, PB13, PB14, PB15,
+     PC13, PC14, PC15, PD0, PD1]
+  special:
+    PA13: SWDIO debug
+    PA14: SWCLK debug
+    PB2: BOOT1 strap
+    PC14: 32.768 kHz crystal (OSC32_IN)
+    PC15: 32.768 kHz crystal (OSC32_OUT)
+    PD0: main crystal (OSC_IN)
+    PD1: main crystal (OSC_OUT)
+
+# STM32F1 remaps move all pins of a peripheral together, hence pin_options.
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [PA0]
+      IN1: [PA1]
+      IN2: [PA2]
+      IN3: [PA3]
+      IN4: [PA4]
+      IN5: [PA5]
+      IN6: [PA6]
+      IN7: [PA7]
+      IN8: [PB0]
+      IN9: [PB1]
+
+  SPI1:
+    type: spi
+    pin_options:
+      - {NSS: [PA4], SCK: [PA5], MISO: [PA6], MOSI: [PA7]}
+      - {NSS: [PA15], SCK: [PB3], MISO: [PB4], MOSI: [PB5]}
+  SPI2:
+    type: spi
+    signals:
+      NSS: [PB12]
+      SCK: [PB13]
+      MISO: [PB14]
+      MOSI: [PB15]
+
+  I2C1:
+    type: i2c
+    pin_options:
+      - {SCL: [PB6], SDA: [PB7]}
+      - {SCL: [PB8], SDA: [PB9]}
+  I2C2:
+    type: i2c
+    signals:
+      SCL: [PB10]
+      SDA: [PB11]
+
+  USART1:
+    type: uart
+    pin_options:
+      - {TX: [PA9], RX: [PA10]}
+      - {TX: [PB6], RX: [PB7]}
+  USART2:
+    type: uart
+    signals:
+      TX: [PA2]
+      RX: [PA3]
+  USART3:
+    type: uart
+    signals:
+      TX: [PB10]
+      RX: [PB11]
+
+  TIM1:
+    type: pwm
+    signals:
+      CH1: [PA8]
+      CH2: [PA9]
+      CH3: [PA10]
+      CH4: [PA11]
+  TIM2:
+    type: pwm
+    pin_options:
+      - {CH1: [PA0], CH2: [PA1], CH3: [PA2], CH4: [PA3]}
+      - {CH1: [PA15], CH2: [PB3], CH3: [PA2], CH4: [PA3]}
+      - {CH1: [PA0], CH2: [PA1], CH3: [PB10], CH4: [PB11]}
+      - {CH1: [PA15], CH2: [PB3], CH3: [PB10], CH4: [PB11]}
+  TIM3:
+    type: pwm
+    pin_options:
+      - {CH1: [PA6], CH2: [PA7], CH3: [PB0], CH4: [PB1]}
+      - {CH1: [PB4], CH2: [PB5], CH3: [PB0], CH4: [PB1]}
+  TIM4:
+    type: pwm
+    signals:
+      CH1: [PB6]
+      CH2: [PB7]
+      CH3: [PB8]
+      CH4: [PB9]
+
+  USB:
+    type: usb
+    signals:
+      DM: [PA11]
+      DP: [PA12]
+
+  CAN:
+    type: can
+    pin_options:
+      - {RX: [PA11], TX: [PA12]}
+      - {RX: [PB8], TX: [PB9]}

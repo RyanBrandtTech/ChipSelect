@@ -9,6 +9,14 @@ The utility runs three separate programs in the following order:
 2)  Part Evaluator
 3)  Summary Viewer
 
+Usage
+
+    pip install -r requirements.txt        # PyYAML, jsonschema, Markdown; Claude Code must be installed and logged in
+    python -m chipselect examples/sensor_node/Requirements.md
+
+This writes `formal_specification.yaml`, `agent_assumptions.md`, `recommended_parts.yaml` and `summary.html` to an `output/` directory next to the requirements file (change with `--out`).
+Use `--skip-agent` to re-run the Part Evaluator and Summary Viewer on a Formal Specification that is already there, and `python -m unittest discover -s tests -t .` to run the tests.
+
 Specification Agent
 The Specification Agent is provided with an agent_context.md file, which is a generic set of instructions used as context for the agent.
 After injection of this context, the agent reads the Requirements.md file and creates a Formal Specification from it.
@@ -29,13 +37,13 @@ b)  Agent Assumptions (sourced from agent_assumptions.md)
 c)  Formal Specification (sourced from the Formal Specification)
 
 TODO:
-* Define schema for Parts Database
-* Define schema for Formal Specification including filetype.
-* Write Part Evaluator script
-* Write basic agent_context.md file
-* Define Specification Agent and create a simple way to invoke it to produce the agent_assumptions.md and Formal Specification
-* Write Summary Viewer script for generating the summary html file.
-* Write some example Requirements.md files and put them in an examples folder.
+* ~~Define schema for Parts Database~~ (done: `schemas/part.schema.yaml`, example in `parts/`, check with `python -m chipselect.parts_db parts/`)
+* ~~Define schema for Formal Specification including filetype.~~ (done: YAML, `schemas/spec.schema.yaml`, check with `python -m chipselect.spec <file>`)
+* ~~Write Part Evaluator script~~ (done: `python -m chipselect.evaluator <spec> --parts parts/`)
+* ~~Write basic agent_context.md file~~ (done: `agent_context.md`)
+* ~~Define Specification Agent and create a simple way to invoke it to produce the agent_assumptions.md and Formal Specification~~ (done: `python -m chipselect.spec_agent Requirements.md`, runs `claude -p` with no tools)
+* ~~Write Summary Viewer script for generating the summary html file.~~ (done: `python -m chipselect.viewer`)
+* ~~Write some example Requirements.md files and put them in an examples folder.~~ (done: `examples/`)
 
 The information in the Parts Database is expected to include the following:
 * Unit Cost

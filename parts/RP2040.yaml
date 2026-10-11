@@ -1,0 +1,142 @@
+schema_version: 1
+part_number: RP2040
+manufacturer: Raspberry Pi
+description: Dual Arm Cortex-M0+ MCU, 133 MHz, 264 KB RAM, external QSPI flash, QFN-56
+datasheet: https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf
+
+# Placeholder price and stock, not live distributor data.
+unit_cost_usd: 0.80
+quantity_available: 150000
+
+core: Cortex-M0+
+max_clock_mhz: 133
+flash_kb: 0
+ram_kb: 264
+temperature: {min_c: -20, max_c: 85}
+
+package:
+  name: QFN-56
+  pin_count: 56
+  length_mm: 7.0
+  width_mm: 7.0
+  height_mm: 0.9
+
+power:
+  supplies:
+    - {name: IOVDD, min_v: 1.8, max_v: 3.3, required: true}
+    - {name: VREG_VIN, min_v: 1.8, max_v: 3.3, required: true, description: Input of the on-chip regulator that supplies DVDD}
+    - {name: USB_VDD, min_v: 3.3, max_v: 3.3, required: true, description: May share IOVDD at 1.8 V if USB is unused}
+    - {name: ADC_AVDD, min_v: 3.3, max_v: 3.3, required: true, description: May share IOVDD at 1.8 V with reduced ADC performance}
+    - {name: DVDD, min_v: 1.1, max_v: 1.1, required: false, description: Core supply; normally fed from the on-chip regulator}
+  io_voltages: [1.8, 3.3]
+
+counts:
+  analog_inputs: 4
+  analog_outputs: 0
+  gpio: 30
+  spi: 2
+  i2c: 2
+  pwm_pins: 30
+  uart: 2
+  can: 0
+  usb: 1
+  ethernet: 0
+  ext_flash: 1
+
+pins:
+  gpio:
+    [GP0, GP1, GP2, GP3, GP4, GP5, GP6, GP7, GP8, GP9, GP10, GP11, GP12, GP13, GP14, GP15,
+     GP16, GP17, GP18, GP19, GP20, GP21, GP22, GP23, GP24, GP25, GP26, GP27, GP28, GP29]
+  dedicated: [USB_DM, USB_DP, QSPI_SCLK, QSPI_SS, QSPI_SD0, QSPI_SD1, QSPI_SD2, QSPI_SD3]
+
+# Each GPIO selects its function independently, so signals are listed per pin.
+peripherals:
+  ADC:
+    type: adc
+    signals:
+      IN0: [GP26]
+      IN1: [GP27]
+      IN2: [GP28]
+      IN3: [GP29]
+
+  SPI0:
+    type: spi
+    signals:
+      MISO: [GP0, GP4, GP16, GP20]
+      NSS: [GP1, GP5, GP17, GP21]
+      SCK: [GP2, GP6, GP18, GP22]
+      MOSI: [GP3, GP7, GP19, GP23]
+  SPI1:
+    type: spi
+    signals:
+      MISO: [GP8, GP12, GP24, GP28]
+      NSS: [GP9, GP13, GP25, GP29]
+      SCK: [GP10, GP14, GP26]
+      MOSI: [GP11, GP15, GP27]
+
+  I2C0:
+    type: i2c
+    signals:
+      SDA: [GP0, GP4, GP8, GP12, GP16, GP20, GP24, GP28]
+      SCL: [GP1, GP5, GP9, GP13, GP17, GP21, GP25, GP29]
+  I2C1:
+    type: i2c
+    signals:
+      SDA: [GP2, GP6, GP10, GP14, GP18, GP22, GP26]
+      SCL: [GP3, GP7, GP11, GP15, GP19, GP23, GP27]
+
+  UART0:
+    type: uart
+    signals:
+      TX: [GP0, GP12, GP16, GP28]
+      RX: [GP1, GP13, GP17, GP29]
+      CTS: [GP2, GP14, GP18]
+      RTS: [GP3, GP15, GP19]
+  UART1:
+    type: uart
+    signals:
+      TX: [GP4, GP8, GP20, GP24]
+      RX: [GP5, GP9, GP21, GP25]
+      CTS: [GP6, GP10, GP22, GP26]
+      RTS: [GP7, GP11, GP23, GP27]
+
+  PWM0:
+    type: pwm
+    signals: {A: [GP0, GP16], B: [GP1, GP17]}
+  PWM1:
+    type: pwm
+    signals: {A: [GP2, GP18], B: [GP3, GP19]}
+  PWM2:
+    type: pwm
+    signals: {A: [GP4, GP20], B: [GP5, GP21]}
+  PWM3:
+    type: pwm
+    signals: {A: [GP6, GP22], B: [GP7, GP23]}
+  PWM4:
+    type: pwm
+    signals: {A: [GP8, GP24], B: [GP9, GP25]}
+  PWM5:
+    type: pwm
+    signals: {A: [GP10, GP26], B: [GP11, GP27]}
+  PWM6:
+    type: pwm
+    signals: {A: [GP12, GP28], B: [GP13, GP29]}
+  PWM7:
+    type: pwm
+    signals: {A: [GP14], B: [GP15]}
+
+  USB:
+    type: usb
+    signals:
+      DM: [USB_DM]
+      DP: [USB_DP]
+
+  QSPI:
+    type: ext_flash
+    signals:
+      CLK: [QSPI_SCLK]
+      NCS: [QSPI_SS]
+      IO0: [QSPI_SD0]
+      IO1: [QSPI_SD1]
+      IO2: [QSPI_SD2]
+      IO3: [QSPI_SD3]
