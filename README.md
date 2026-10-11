@@ -15,7 +15,7 @@ only if every required signal and GPIO can be placed on its own pin.
 
 A single command runs three programs in order.
 
-![ChipSelect architecture: the user's Requirements.md goes to the Specification Agent (with agent_context.md), which produces the Formal Specification and agent_assumptions.md; the Part Evaluator checks the Formal Specification against the Parts Database to produce recommended_parts.yaml; the Summary Viewer turns these into summary.html for the user.](ChipSelect_architecture.png)
+![ChipSelect architecture: the user's Requirements.md goes to the Specification Agent (with agent_context.md), which produces the Formal Specification and agent_assumptions.md; the Part Evaluator checks the Formal Specification against the Parts Database to produce recommended_parts.yaml; the Summary Viewer turns these into summary.html for the user.](screenshots/ChipSelect_architecture.png)
 
 1. **Specification Agent.** An AI agent reads `Requirements.md`, guided by
    the instructions in `agent_context.md`, and writes a Formal Specification.
@@ -195,7 +195,7 @@ the disclaimer and the sources and assumptions behind each part.
 | `parts/` | The Parts Database |
 | `examples/` | Example requirements files |
 | `tests/` | Tests for the Part Evaluator |
-| `screenshots/` | Screenshots of the summary page used in this README |
+| `screenshots/` | The architecture diagram and summary page screenshots used in this README |
 
 Run the tests with:
 
