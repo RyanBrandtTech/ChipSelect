@@ -5,11 +5,31 @@ A recommendation engine for microcontroller selection in electronics.
 You describe your circuit's requirements in plain English, and ChipSelect
 lists the microcontrollers in its Parts Database that actually fit them.
 
-Many microcontrollers offer far more peripherals than they have pins, and
-most pins serve several purposes, so a part whose headline counts look
-sufficient may still be unable to provide everything a design needs at once.
-ChipSelect therefore does not stop at comparing counts: a part is recommended
-only if every required signal and GPIO can be placed on its own pin.
+## Motivation
+
+Choosing a microcontroller is slow, mostly manual work. Distributor filters
+narrow the field by headline numbers such as flash size or the count of SPI
+buses, but they cannot say whether a part can provide everything a design
+needs at the same time. Many microcontrollers offer far more peripherals than
+they have pins, and most pins serve several purposes, so the real answer is
+in the pin multiplexing tables of each candidate's datasheet, which commonly
+runs to hundreds of pages. Working out a conflict-free pin assignment by hand
+can take hours for a single part, and a careful comparison of a handful of
+candidates typically takes an engineer anywhere from a few days to a couple
+of weeks. Because of that cost, teams tend to evaluate only two or three
+parts, often the ones they already know.
+
+ChipSelect does the pin-level check for every part in its database in about a
+second. A part is recommended only if every required signal and GPIO can be
+placed on its own pin, and the assignment it found is included in the result.
+
+The same check helps with supply risk. When a chosen part goes out of stock
+or its lead time grows, as happened widely during the 2021-2022 chip
+shortage, a design that was evaluated against only one or two parts has no
+ready alternative, and finding one means repeating the evaluation under
+schedule pressure. Because ChipSelect lists every part that fits, with price
+and stock, the alternatives are known from the start, and the search can be
+re-run in seconds whenever the requirements or the stock figures change.
 
 ## How it works
 
