@@ -1,73 +1,180 @@
 # ChipSelect
-A recommendation engine for critical part selection in electronics.
 
-Run as a single command-line utility with a Requirements.md as input.
+A recommendation engine for microcontroller selection in electronics.
 
-The Requirements.md is an English-language description of the circuit's requirements, which may be incomplete.
-The utility runs three separate programs in the following order:
-1)  Specification Agent
-2)  Part Evaluator
-3)  Summary Viewer
+You describe your circuit's requirements in plain English, and ChipSelect
+lists the microcontrollers in its Parts Database that actually fit them.
 
-Usage
+Many microcontrollers offer far more peripherals than they have pins, and
+most pins serve several purposes, so a part whose headline counts look
+sufficient may still be unable to provide everything a design needs at once.
+ChipSelect therefore does not stop at comparing counts: a part is recommended
+only if every required signal and GPIO can be placed on its own pin.
 
-    pip install -r requirements.txt        # PyYAML, jsonschema, Markdown; Claude Code must be installed and logged in
+## How it works
+
+A single command runs three programs in order.
+
+![ChipSelect architecture: the user's Requirements.md goes to the Specification Agent (with agent_context.md), which produces the Formal Specification and agent_assumptions.md; the Part Evaluator checks the Formal Specification against the Parts Database to produce recommended_parts.yaml; the Summary Viewer turns these into summary.html for the user.](ChipSelect_architecture.png)
+
+1. **Specification Agent.** An AI agent reads `Requirements.md`, guided by
+   the instructions in `agent_context.md`, and writes a Formal Specification.
+   Requirements are often incomplete, so where it has to, the agent makes
+   minimal assumptions and records every one of them in
+   `agent_assumptions.md`. The agent is given no tools and cannot modify
+   `Requirements.md`. Its output is validated against the specification
+   schema and it is asked to correct any errors.
+2. **Part Evaluator.** A deterministic program (no agent) checks every part
+   in the Parts Database against the Formal Specification and writes
+   `recommended_parts.yaml`: the parts that meet every criterion, each with
+   its price, availability and a pin assignment that works.
+3. **Summary Viewer.** Produces `summary.html`, a single self-contained page
+   with four tabs: the recommended parts (sortable by price or by
+   availability), the requirements, the agent's assumptions, and the Formal
+   Specification.
+
+## Usage
+
+Requirements: Python 3.10 or later, and [Claude Code](https://claude.com/claude-code)
+installed and logged in (the Specification Agent runs through `claude -p`).
+
+    pip install -r requirements.txt
     python -m chipselect examples/sensor_node/Requirements.md
 
-This writes `formal_specification.yaml`, `agent_assumptions.md`, `recommended_parts.yaml` and `summary.html` to an `output/` directory next to the requirements file (change with `--out`).
-Use `--skip-agent` to re-run the Part Evaluator and Summary Viewer on a Formal Specification that is already there, and `python -m unittest discover -s tests -t .` to run the tests.
+Each run calls a Claude model through your Claude Code login and counts
+against that account's usage, with up to three calls if the agent's output
+has to be corrected. Runs with `--skip-agent` make no model calls.
 
-Specification Agent
-The Specification Agent is provided with an agent_context.md file, which is a generic set of instructions used as context for the agent.
-After injection of this context, the agent reads the Requirements.md file and creates a Formal Specification from it.
-If the information in the Requirements.md file is insufficient to create a complete Formal Specification, the agent will note the discrepancy and make reasonable minimal assumptions to complete a Formal Specification.  Any assumptions used are documented in a agent_assumptions.md file which is one output of the utility.
-The agent is not allowed to modify the Requirements.md file.  The content and format of the Formal Specification is to be specified in the agent_context.md file.
+The outputs are written to an `output/` directory next to the requirements
+file:
 
-Part Evaluator
-The Part Evaluator is a purely deterministic algorithm (does not use an agent) which takes in the Formal Specification provided by the Specification Agent and produces a recommended_parts.yaml file.
-The Part Evaluator references a Parts Database which includes detailed information about all available parts to be considered.
-The recommended_parts.yaml output contains a list of all parts from the database which meet all criteria of the Formal Specification.
-In addition to the list of parts, the recommended_parts.yaml should also include price and availability data for each included part.
+| File | Contents |
+|------|----------|
+| `formal_specification.yaml` | The Formal Specification written by the agent |
+| `agent_assumptions.md` | Assumptions, ambiguities and requirements the specification could not capture |
+| `recommended_parts.yaml` | Parts that meet the specification, with price, availability and pin assignment |
+| `summary.html` | The summary page; open it in a browser |
 
-Summary Viewer
-The Summary Viewer produces an html file as output whose default selected tab is a visualization of the recommended_parts.yaml file with options for sorting by price (lowest to highest) or availability (most to least).
-There are to be three additional tabs:
-a)  Requirements (sourced from Requirements.md)
-b)  Agent Assumptions (sourced from agent_assumptions.md)
-c)  Formal Specification (sourced from the Formal Specification)
+Options:
 
-TODO:
-* ~~Define schema for Parts Database~~ (done: `schemas/part.schema.yaml`, example in `parts/`, check with `python -m chipselect.parts_db parts/`)
-* ~~Define schema for Formal Specification including filetype.~~ (done: YAML, `schemas/spec.schema.yaml`, check with `python -m chipselect.spec <file>`)
-* ~~Write Part Evaluator script~~ (done: `python -m chipselect.evaluator <spec> --parts parts/`)
-* ~~Write basic agent_context.md file~~ (done: `agent_context.md`)
-* ~~Define Specification Agent and create a simple way to invoke it to produce the agent_assumptions.md and Formal Specification~~ (done: `python -m chipselect.spec_agent Requirements.md`, runs `claude -p` with no tools)
-* ~~Write Summary Viewer script for generating the summary html file.~~ (done: `python -m chipselect.viewer`)
-* ~~Write some example Requirements.md files and put them in an examples folder.~~ (done: `examples/`)
+| Option | Effect |
+|--------|--------|
+| `--out DIR` | Write the outputs to `DIR` |
+| `--parts DIR` | Use a different Parts Database directory |
+| `--model NAME` | Claude model for the Specification Agent |
+| `--skip-agent` | Reuse the Formal Specification and assumptions already in the output directory, and re-run only the Part Evaluator and Summary Viewer |
 
-The Parts Database is in `parts/`; see `parts/README.md` for its sources and a disclaimer about the accuracy of the data.
+Each stage can also be run on its own:
 
-The information in the Parts Database is expected to include the following:
-* Unit Cost
-* Quantity Available (Availability)
-* Size (Surface Area)
-* Length
-* Width
-* Height
-* Required Power Supplies
-* Possible I/O Voltages
-* Analog Input Pin Count
-* Analog Output Pin Count
-* Number of GPIO
-* Number of SPI Buses
-* Number of I2C Buses
-* Number of PWM-Capable Pins
-* Number of USB Drivers
-* Number of Ethernet PHY MAC Peripherals
-* Number of External Flash Memory Controllers
-* Bipartite Graph Representation of Internal Peripherals to Device Pin Connectivity (preferred representation is a dictionary of peripheral name -> available pins for multiplexing)
+    python -m chipselect.spec_agent Requirements.md --out DIR
+    python -m chipselect.evaluator formal_specification.yaml --parts parts/
+    python -m chipselect.viewer --recommended recommended_parts.yaml --requirements Requirements.md \
+        --assumptions agent_assumptions.md --spec formal_specification.yaml
 
-It is expected that many parts in the database may have an excessive number of possible pin uses, but compatibility with a desired application is expected to be frequently constrained by the limited number of available pins, many of which may be used for multiple purposes.
-The goal is to have a clear way of evaluating which chips actually fit the desired English-language requirements provided by the user.
+## Writing requirements
 
-Let's work through the TODO items one at a time.  Query the developer to answer questions regarding how things should be implemented.
+`Requirements.md` is free-form English. Describe what the microcontroller has
+to connect to and any constraints on it, for example supply voltage, sensors
+and buses, analog inputs, PWM outputs, memory, cost, stock, size and
+operating temperature. See `examples/` for three samples of varying
+completeness.
+
+Anything the Formal Specification cannot express (wireless connectivity,
+low-power modes, a preferred vendor) is listed in `agent_assumptions.md`
+under "Requirements not captured" for you to check by hand.
+
+## Formal Specification
+
+A YAML file of hard requirements, defined by `schemas/spec.schema.yaml` and
+described for the agent in `agent_context.md`. It contains:
+
+- **Limits** (all optional): maximum unit cost, minimum stock, maximum area,
+  length, width and height, minimum flash, RAM and clock speed, acceptable
+  CPU cores, and operating temperature range.
+- **Power**: the supply rails available on the board and the I/O voltage.
+- **Interfaces**: buses (SPI, I2C, UART, CAN, USB, Ethernet, external flash)
+  with the signals each needs, and channel counts for ADC, DAC and PWM.
+- **GPIO**: the number of plain GPIO pins needed beyond the interfaces.
+
+A part that fails any one requirement is excluded. Check a specification
+with `python -m chipselect.spec <file>`.
+
+## Parts Database
+
+The database is the `parts/` directory, with one YAML file per
+microcontroller in the format defined by `schemas/part.schema.yaml`. Each
+part records:
+
+- unit cost and quantity available
+- package, with length, width and height (area is derived)
+- CPU core, maximum clock, flash, RAM and operating temperature range
+- required power supplies and possible I/O voltages
+- headline counts: analog inputs and outputs, GPIO, SPI, I2C, UART and CAN
+  buses, PWM-capable pins, USB, Ethernet and external flash controllers
+- the connectivity between internal peripherals and device pins: for every
+  peripheral signal, the pins it can be multiplexed onto
+
+The pin connectivity also captures peripherals whose pins can only be
+remapped as a group, serial units that can act as one of several bus types
+but not two at once, and pins normally kept for debug, boot or a crystal,
+which the evaluator uses only as a last resort.
+
+Check the database with `python -m chipselect.parts_db parts/`.
+
+### Adding a part
+
+1. Copy an existing file in `parts/` that resembles the new part and name it
+   after the full orderable part number (write any "/" as "_" in the file
+   name).
+2. Fill it in from the manufacturer's datasheet. The descriptions in
+   `schemas/part.schema.yaml` explain each field.
+3. Run `python -m chipselect.parts_db parts/`. It checks the file against the
+   schema and reports any headline count that disagrees with the pin map.
+4. Record your sources, and anything you assumed, in `parts/README.md`.
+
+### Data accuracy
+
+**The part data is not authoritative.** It was compiled by an AI model from
+datasheets and pin databases found online and, in places, from recall;
+prices and stock are not live. See [`parts/README.md`](parts/README.md) for
+the disclaimer and the sources and assumptions behind each part.
+
+## Limitations
+
+- **Microcontrollers only.** Other kinds of parts cannot be described or
+  selected.
+- **Small database.** There are 24 parts, so "no part fits" often means only
+  that a suitable part has not been added.
+- **Unverified part data.** Nobody has reviewed the entries against the
+  datasheets, and prices and stock are not live; see
+  [`parts/README.md`](parts/README.md).
+- **One pin assignment, not the best one.** The evaluator reports the first
+  assignment that works. It does not optimise for layout, and it ignores
+  electrical details such as drive strength, 5 V tolerance, clocking and
+  which pins can wake the part or raise interrupts.
+- **Hard requirements only.** Preferences and "nice to have" items cannot be
+  expressed, so they are either left out or noted in `agent_assumptions.md`.
+- **The agent can misread requirements.** The Formal Specification is checked
+  for format, not for whether it reflects what you meant. Read it and
+  `agent_assumptions.md` before trusting a result.
+- **The summary page has not been tested in a browser.** The tabs and sort
+  buttons are untested.
+
+## Project layout
+
+| Path | Contents |
+|------|----------|
+| `chipselect/` | The three programs and the command-line entry point |
+| `agent_context.md` | Instructions given to the Specification Agent |
+| `schemas/` | Schemas for the Parts Database and the Formal Specification |
+| `parts/` | The Parts Database |
+| `examples/` | Example requirements files |
+| `tests/` | Tests for the Part Evaluator |
+
+Run the tests with:
+
+    python -m unittest discover -s tests -t .
+
+## License
+
+Released under the MIT License; see [`LICENSE`](LICENSE).
